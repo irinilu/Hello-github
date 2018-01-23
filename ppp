@@ -1,4 +1,4 @@
-############How to Create a VM With Plan Information (Specialized Disk)
+###########How to Create a VM With Plan Information (Specialized Disk)
 #####Before running the script please ensure to check if Programmatic Deployment for that particular Marketplace Image is Enabled. 
 ######You can check it by navigating to Billing>> Choose Subscription>> Programmatic Deployment>> Marketplace Item : Enable
 ##### you may check one note by search "How to Create a VM With Plan Information"
@@ -6,16 +6,65 @@
 ##Connect to Azure Subscription
 Login-AzureRMAccount
 
-Select-AzureRMSubscription -subscriptionid "irini"
+Get-AzureRmMarketplaceTerms -Publisher Fortinet -Product fortinet-fortianalyzer -Name fortinet-fortianalyzer
+
+Get-AzureRmMarketplaceTerms -Publisher Fortinet -Product fortinet-fortianalyzer -Name fortinet-fortianalyzer | Set-AzureRmMarketplaceTerms -Accept
+
+
+# Create a subnet configuration
+$subnetConfig = New-AzureRmVirtualNetworkSubnetConfig `
+    -Name ftSubnet2018 `
+    -AddressPrefix 172.168.1.0/24
+
+$vnet = New-AzureRmVirtualNetwork `
+    -ResourceGroupName FortiAnalyzer-eu `
+    -Location NorthEurope `
+    -Name firtivNET `
+    -AddressPrefix 172.168.0.0/16 `
+    -Subnet $subnetConfig
+
+$pip = New-AzureRmPublicIpAddress `
+    -ResourceGroupName FortiAnalyzer-eu `
+    -Location NorthEurope `
+    -Name "ftpublicdns$(Get-Random)" `
+    -AllocationMethod Static `
+    -IdleTimeoutInMinutes 4
+
+  $nsgRuleRDP = New-AzureRmNetworkSecurityRuleConfig `
+    -Name ftNetworkSecurityGroupRuleRDP `
+    -Protocol Tcp `
+    -Direction Inbound `
+    -Priority 1000 `
+    -SourceAddressPrefix * `
+    -SourcePortRange * `
+    -DestinationAddressPrefix * `
+    -DestinationPortRange 22 `
+    -Access Allow
+
+  $nsg = New-AzureRmNetworkSecurityGroup `
+    -ResourceGroupName FortiAnalyzer-eu `
+    -Location NorthEurope `
+    -Name ftNetworkSecurityGroup `
+    -SecurityRules $nsgRuleRDP
+
+$nicname = New-AzureRmNetworkInterface `
+    -Name euroNIC `
+    -ResourceGroupName FortiAnalyzer-eu `
+    -Location NorthEurope `
+    -SubnetId $vnet.Subnets[0].Id `
+    -PublicIpAddressId $pip.Id `
+    -NetworkSecurityGroupId $nsg.Id
+
+Select-AzureRMSubscription -subscriptionid a85467a5-6d34-4e61-9e51-f137e1c21226
  
 ##Assign required variables
-$location = "centralus"
-$myResourceGroup = "ARMTest"
-$myStorageAccountName = "armteststoragedev"
-$nicname="myNIC"
-$vmName="mytest"
-$vmSize="Standard_A0"
-$osDiskName=$vmName + "osDisk"
+$location = "North Europe"
+$myResourceGroup = "FortiAnalyzer-eu"
+$myStorageAccountName = "fortianalyzersaeu"
+$nicname="euroNIC"
+$vmName= "FortiAnalyzereueu"
+$vmSize= "Standard_D2_v2"
+$osDiskName=$vmName + "FortiAnalyzer1eu-osDisk"
  
 ##Assign the NIC
 $nic=Get-AzureRmNetworkInterface -ResourceGroupName $myResourceGroup -Name $nicname
@@ -24,13 +73,14 @@ $nic=Get-AzureRmNetworkInterface -ResourceGroupName $myResourceGroup -Name $nicn
 $vm = New-AzureRmVMConfig -VMName $vmName -VMSize $vmSize
  
 ## Plan Information
-Set-AzureRmVMPlan -VM $vm -Publisher bitnami -Product redmineplusagile -Name "public"
+Set-AzureRmVMPlan -VM $vm -Publisher Fortinet -Product fortinet-fortianalyzer -Name fortinet-fortianalyzer 
+
  
 ## VM Object
 $vm = Add-AzureRmVMNetworkInterface -VM $vm -Id $nic.Id
  
-$osDiskUri = "https://armteststoragedev.blob.core.windows.net/vhds/myOsDisk1.vhd"
-$vm = Set-AzureRmVMOSDisk -VM $vm -Name $osDiskName -VhdUri $osDiskUri -CreateOption attach -Windows
+$osDiskUri = "https://fortianalyzersaeu.blob.core.windows.net/vhds/FortiAnalyzer-fortinet.fortianalyzerfortianalyzer-20180116131002-addsnngepf5cm-osdisk.vhd"
+$vm = Set-AzureRmVMOSDisk -VM $vm -Name $osDiskName -VhdUri $osDiskUri -CreateOption attach -Linux
  
 ## Create the VM 
 New-AzureRmVM -ResourceGroupName $myResourceGroup -Location $location -VM $vm -Verbose -Debug
