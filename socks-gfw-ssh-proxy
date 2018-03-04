@@ -1,0 +1,24 @@
+##################################
+
+### How To Route Web Traffic Securely Without a VPN Using a SOCKS Tunnel
+
+$ ssh -D 8123 -f -C -q -N user@example.com
+
+Explanation of arguments
+-D: Tells SSH that we want a SOCKS tunnel on the specified port number (you can choose a number between 1025-65536)
+-f: Forks the process to the background
+-C: Compresses the data before sending it
+-q: Uses quiet mode
+-N: Tells SSH that no command will be sent once the tunnel is up
+
+Be sure to replace user@example.com with your own sudo user and server IP address or domain name.
+Once you enter the command, you'll immediately be brought to the command prompt again with no sign of success or failure; that's normal.
+
+Verify that the tunnel is up and running with this command:
+
+$ ps aux | grep ssh
+
+You should see a line in the output like:
+
+Output:
+user    14345   0.0  0.0  2462228    452   ??  Ss    6:43AM   0:00.00 ssh -D 8123 -f -C -q -N user@example.com
