@@ -1,0 +1,58 @@
+#install server
+
+pip3 install shadowsocks
+vi /etc/shadowsocks.json
+# service start
+(ssserver -c /etc/shadowsocks.json -d start &)
+# setup in rc.local
+echo (ssserver -c /etc/shadowsocks.json -d start &) >> /ect/rc.local
+
+
+#####
+
+
+    "server":"0.0.0.0",
+    "server_port":8899,
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "password":"mypasswd",
+    "timeout":300,
+    "method":"aes-256-cfb",
+    "fast_open":false
+}
+
+#### this is config.json is for muti users
+
+{
+    "server":"0.0.0.0",  # your ip address
+    "local_address": "127.0.0.1",
+    "local_port":1080,
+    "port_password": {
+        "8381": "foobar1",    #port and pw
+        "8382": "foobar2",
+        "8383": "foobar3",
+        "8384": "foobar4"
+    },
+    "timeout":300,
+    "method":"aes-256-cfb",
+    "fast_open": false
+    
+    #### after client connected to server, you need to use google exstension for GFW
+    
+    # SwitchyOmega download link:  ( install this exstension in chrome)
+    
+    https://github.com/FelisCatus/SwitchyOmega/releases
+    
+    
+    #### windows client download LINK
+    
+    https://github.com/shadowsocks/shadowsocks-windows/releases
+    
+    #### android client download 
+    https://github.com/shadowsocks/shadowsocks-android/releases 
+    
+    #### linux for ubuntu client
+    
+    https://github.com/shadowsocks/shadowsocks-qt5
+    
+    
