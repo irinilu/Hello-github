@@ -1,4 +1,4 @@
-#install server
+########### install Ubutu server ################
 
 pip3 install shadowsocks
 vi /etc/shadowsocks.json
@@ -8,7 +8,20 @@ vi /etc/shadowsocks.json
 echo (ssserver -c /etc/shadowsocks.json -d start &) >> /ect/rc.local
 
 
-#####
+########### install Centos rhel aws-linux #################
+# first install pip
+
+curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+python get-pip.py
+
+
+#install shadowsocks：
+
+pip install --upgrade pip
+pip install shadowsocks
+
+
+##### need to manually setup /etc/shadowsocks.json 
 
 
     "server":"0.0.0.0",
