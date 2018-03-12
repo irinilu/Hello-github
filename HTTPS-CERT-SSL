@@ -32,4 +32,6 @@ $ corntab -e
 ## easoneano.com https manually renewl check
 $ certbot renew
 
+## after ssl installed , you need to change URL link in /var/www/html/XXXX with "https" 
+
 ## refer: https://coolshell.cn/articles/18094.html
