@@ -2,6 +2,9 @@
 
 apt install python3-pip
 pip3 install shadowsocks
+
+#if in azure,pls try $sudo apt install shadowsocks* 
+
 vi /etc/shadowsocks.json
 # service start
 (ssserver -c /etc/shadowsocks.json -d start &)
