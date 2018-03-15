@@ -1,5 +1,6 @@
 ########### install Ubutu server ################
 
+apt install python3-pip
 pip3 install shadowsocks
 vi /etc/shadowsocks.json
 # service start
