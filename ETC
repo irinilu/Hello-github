@@ -1,0 +1,2 @@
+
+find / -name \* -type f -print | xargs grep "wordpress"
