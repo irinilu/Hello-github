@@ -27,8 +27,8 @@ pip install shadowsocks
 
 ##### need to manually setup /etc/shadowsocks.json 
 
-
-    "server":"0.0.0.0",
+{
+    "server":"0.0.0.0",     # your ip address ,if aws or azure,leave 0.0.0.0 as default
     "server_port":8899,
     "local_address":"127.0.0.1",
     "local_port":1080,
@@ -53,6 +53,18 @@ pip install shadowsocks
     "timeout":300,
     "method":"aes-256-cfb",
     "fast_open": false
+    
+    
+    ### services start / stop /restart
+    
+    sudo ssserver -c /etc/shadowsocks/config.json -d start
+
+
+    sudo ssserver -c /etc/shadowsocks/config.json -d stop
+
+
+    sudo ssserver -c /etc/shadowsocks/config.json -d restart
+    
     
     #### after client connected to server, you need to use google exstension for GFW
     
