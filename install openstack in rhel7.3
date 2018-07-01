@@ -1,0 +1,67 @@
+// this is single NIC HOST for openstack learning only 
+// requeirments :   nic > 1   |  ram > 4   |  cpu = support VT
+
+# lscpu | grep Virtualization
+Virtualization: VT-x
+
+# yum update  
+
+# systemctl stop NetworkManager.servicesystemctl disable NetworkManager.service
+
+# systemctl restart network
+
+# setenforce 0
+# systemctl stop firewalld
+# systemctl disable firewalld.service
+
+# yum update device-mapper 
+
+# yum install -y http://rdo.fedorapeople.org/rdo-release.rpm
+
+# yum install -y openstack-packstack
+
+# packstack --allinone
+
+
+// 
+10.1.1.21_controller.pp:                             [ DONE ]
+Applying 10.1.1.21_network.pp
+10.1.1.21_network.pp:                                [ DONE ]
+Applying 10.1.1.21_compute.pp
+10.1.1.21_compute.pp:                                [ DONE ]
+Applying Puppet manifests                            [ DONE ]
+Finalizing                                           [ DONE ]
+
+ **** Installation completed successfully ******
+
+Additional information:
+ * A new answerfile was created in: /root/packstack-answers-20180701-060551.txt
+ * Time synchronization installation was skipped. Please note that unsynchronized time on server instances might be problem for some OpenStack components.
+ * Warning: NetworkManager is active on 10.1.1.21. OpenStack networking currently does not work on systems that have the Network Manager service enabled.
+ * File /root/keystonerc_admin has been created on OpenStack client host 10.1.1.21. To use the command line tools you need to source the file.
+ * To access the OpenStack Dashboard browse to http://10.1.1.21/dashboard .
+Please, find your login credentials stored in the keystonerc_admin in your home directory.
+ * Because of the kernel update the host 10.1.1.21 requires reboot.
+ * The installation log file is available at: /var/tmp/packstack/20180701-060551-nybPSc/openstack-setup.log
+ * The generated manifests are available at: /var/tmp/packstack/20180701-060551-nybPSc/manifests
+ 
+ // use IE to check http://10.1.1.21/dashboard
+ 
+ 
+[root@rhel73lab ~]# cat keystonerc_admin
+unset OS_SERVICE_TOKEN
+    export OS_USERNAME=admin
+    export OS_PASSWORD='1e4c3e4c5ade4f0f'
+    export OS_AUTH_URL=http://10.1.1.21:5000/v3
+    export PS1='[\u@\h \W(keystone_admin)]\$ '
+
+export OS_PROJECT_NAME=admin
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_IDENTITY_API_VERSION=3
+    [root@rhel73lab ~]#
+    
+// password in vim keystonerc_admin
+
+
+ 
