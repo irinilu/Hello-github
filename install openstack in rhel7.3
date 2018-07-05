@@ -63,5 +63,23 @@ export OS_IDENTITY_API_VERSION=3
     
 // password in vim keystonerc_admin
 
+#######################################
+######## another way to install openstack on rhel7.3 (ROD way) kernel version: 3.10.0-514.28.1.el7.x86_64 , AZURE 
+
+yum install -y https://www.rdoproject.org/repos/rdo-release.rpm
+
+yum update -y
+
+yum install -y openstack-packstack
+
+packstack --gen-answer-file=answer.conf
+
+packstack --answer-file=./answer.conf 
+
+
+
+
+
+
 
  
