@@ -77,7 +77,17 @@ packstack --gen-answer-file=answer.conf
 packstack --answer-file=./answer.conf 
 
 
+############################################
 
+### issue 1:
+[root@rhel73lab ~]# nova hypervisor-stats
+ERROR (CommandError): You must provide a username or user ID via --os-username, --os-user-id, env[OS_USERNAME] or env[OS_USER_ID]
+
+solution:  excute 
+    export OS_USERNAME=admin
+    export OS_PASSWORD='d393e2a2581a4aae'
+    export OS_AUTH_URL=http://10.1.1.21:5000/v3
+    export OS_PROJECT_NAME=admin
 
 
 
