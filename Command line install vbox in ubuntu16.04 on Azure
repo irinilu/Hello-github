@@ -1,6 +1,6 @@
 //  Command line install vbox in ubuntu16.04 
 
-// HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2
+// HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2 | HOST size upto V3 | CPU support VT
 
 1.如果直接使用apt-get安装的版本会是5.0.40，需要使用如下命令添加源后安装
 // direclty using apt-get will install 5.0.40 version, need to manully add resource to install version 5.5.5
@@ -19,7 +19,7 @@ sudo apt-get install virtualbox-5.2
 
 命令行中输入vboxmanage 输出的第一行中包含版本号。
 
-vboxmanage   // type thi command will show the version for Vbox Manage
+vboxmanage   // type this command will show the version for Vbox Manage
 
 需要找到与安装版本对应的扩展包。去下面这个地址中找到自己的版本  
 // then you nned to find related plugin package to install,can find in below address link
