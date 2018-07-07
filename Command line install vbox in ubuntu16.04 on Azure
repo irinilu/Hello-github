@@ -1,0 +1,225 @@
+//  Command line install vbox in ubuntu16.04 
+
+// HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2
+
+1.如果直接使用apt-get安装的版本会是5.0.40，需要使用如下命令添加源后安装
+
+sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
+
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add
+
+sudo apt-get update
+
+sudo apt-get install virtualbox-5.2
+
+
+2.安装VBoxManage扩展
+命令行中输入vboxmanage 输出的第一行中包含版本号。
+
+需要找到与安装版本对应的扩展包。去下面这个地址中找到自己的版本
+
+http://download.virtualbox.org/virtualbox/
+
+点击进入，然后在页面中找到对应的vbox-extpack，复制链接在服务器中下载。
+
+这里安装的VirtualBox版本为5.2.2
+
+wget http://download.virtualbox.org/virtualbox/5.2.2/Oracle_VM_VirtualBox_Extension_Pack-5.2.2-119230.vbox-extpack
+
+VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.2.2-119230.vbox-extpack
+
+VBoxManage list extpacks
+
+image.png
+
+有的版本会自带VNC，必须执行下面一句，否则会造成后面虚拟机的远程桌面连接无法使用。
+
+VBoxManage setproperty vrdeextpack "Oracle VM VirtualBox Extension Pack"
+
+(强行安利一发谷歌，这个问题百度根本没有解决方案，谷歌第一个结果就秒解决)
+
+3.新建虚拟机
+#新建一个虚拟硬盘(10G)
+
+vboxmanage createmedium disk --filename arch.vdi --size 10240
+
+#新建VirtualBox虚拟机文件（系统类型必须严格按照这个写，否则可能不能安装64位系统）
+
+vboxmanage createvm --name Ubuntu12.04 --ostype "Linux26_64" --register
+
+#新建SATA磁盘控制器并将上一步新建的磁盘绑定到虚拟机文件
+
+vboxmanage storagectl Ubuntu12.04 --name "SATA Controller" --add sata --controller IntelAHCI
+
+vboxmanage storageattach Ubuntu12.04 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium arch.vdi
+
+#下载Ubuntu12.04镜像
+
+wget http://releases.ubuntu.com/12.04/ubuntu-12.04.5-desktop-amd64.iso
+
+#新建IDE控制器，设置它为dvd，并绑定ios文件到该dvd，--medium为系统安装文件的iso路径
+
+vboxmanage storagectl Ubuntu12.04 --name "IDE Controller" --add ide
+
+vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-12.04.5-desktop-amd64.iso"
+
+#设置内存(1G)，显存
+
+vboxmanage modifyvm Ubuntu12.04 --memory 1024 --vram 256 --hwvirtex on
+
+#设置IO
+
+vboxmanage modifyvm Ubuntu12.04 --ioapic on
+
+#设置启动项
+
+vboxmanage modifyvm Ubuntu12.04 --boot1 disk --boot2 dvd --boot3 none --boot4 none
+
+#打开VRDE功能(3389)
+
+vboxmanage modifyvm Ubuntu12.04 --vrde on
+
+#无GUI开机
+
+vboxmanage startvm Ubuntu12.04 --type=headless
+
+
+此时已经安装成功，通过window下的远程桌面连接即可连接(如果不是3389的话需要指定端口)，以下是一些其他命令
+
+修改端口
+
+vboxmanage modifyvm Ubuntu12.04 --vrdeport 13389 --vrdeaddress 0.0.0.0
+
+查看系统信息
+
+VBoxManage showvminfo Ubuntu12.04
+
+关机
+
+VBoxManage controlvm Ubuntu12.04 poweroff
+
+安装完成后弹出系统安装镜像
+
+vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
+
+查看运行中的虚拟机
+
+vboxmanage list runningvms
+
+查看所有虚拟机
+
+vboxmanage list vms
+
+完全删除虚拟机
+
+VBoxManage unregistervm --delete 虚拟机名
+
+
+4.系统内安装用户扩展
+(实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
+
+在下面地址中选择安装的VBox版本，然后下载对应的VBoxGuestAdditions_5.2.2.iso
+
+http://download.virtualbox.org/virtualbox/
+
+VBoxManage controlvm Ubuntu12.04 poweroff
+
+// pay attention after --mideim ,it has to be the VBoxGuestAdditions_5.2.2.iso download path in HOST
+vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "VBoxGuestAdditions_5.2.2.iso"
+
+vboxmanage startvm Ubuntu12.04 --type=headless
+
+进入系统后打开命令行 ( need to manually mount)
+
+cd /media/VBOXADDITIONS_5.2.2
+
+sudo sh ./VBoxLinuxAdditions.run
+
+虽然提示了警告，还是安装成功了...
+
+sudo reboot
+
+重启之后世界都不一样了...鼠标正常了，显示可以全屏了，操作也流畅了许多。
+
+CentOS7下不会自动挂载CDROM，需要手动挂载。
+
+5.开启远程ssh
+(在虚拟机内)
+
+sudo apt-get install ssh
+
+(在主机上)
+
+VBoxManage controlvm Ubuntu12.04 poweroff
+
+VBoxManage modifyvm Ubuntu12.04 --natpf1 "gliethttp_ssh,tcp,,13322,,22"
+
+VBoxManage startvm Ubuntu12.04 --type=headless
+
+通过ssh主机的13322端口即可连接虚拟机
+
+6.配置虚拟机网络
+CentOS7安装后并没有网络，需要如下配置
+
+1、打开 vi /etc/sysconfig/network-scripts/ifcfg-eth0（每个机子都可能不一样，但格式会是"ifcfg-eth*"），把ONBOOT=no，改为ONBOOT=yes
+2、重启网络：service network restart
+
+(一般情况下Ubuntu安装完整后直接能连接网络，请省略以下步骤)
+
+新建nat网络连接
+
+VBoxManage natnetwork add --netname natnet1 --network "192.168.15.0/24" --enable --dhcp on
+
+查看所有nat网络连接
+
+VBoxManage list natnetworks
+
+打开指定连接
+
+VBoxManage natnetwork start --netname natnet1
+
+关闭指定连接
+
+VBoxManage natnetwork stop --netname natnet1
+
+删除指定连接
+
+VBoxManage natnetwork remove --netname natnet1
+
+7.组建虚拟机之间的局域网
+上述设置之后，Ubuntu使用ifconfig查看IP地址，CentOS使用ip addr查看IP地址，发现全都是10.0.2.15...
+
+因为VirtualBox默认采用NAT网络连接，虚拟机之间并不能通信，需要新建一个网卡，完成相关操作。
+
+官方文档：
+
+新建DHCP服务器：https://www.virtualbox.org/manual/ch08.html#vboxmanage-dhcpserver
+
+虚拟机新建网卡：https://www.virtualbox.org/manual/ch06.html#network_internal
+
+VBoxManage dhcpserver add --netname "mylan" --ip 192.168.123.1 --netmask 255.255.255.0 --lowerip 192.168.123.10 --upperip 192.168.123.99 --enable
+
+VBoxManage modifyvm CentOS7 --intnet4 "mylan"
+
+VBoxManage modifyvm CentOS7_ms --intnet4 "mylan"
+
+和官方文档上不太一样，重启之后并没有直接找到网卡，需要手动设置vbox文件的网卡设置为
+
+可能需要如下的命令，未找到理论依据...
+
+VBoxManage modifyvm CentOS7 --nic4 intnet
+
+<Adapter slot="3" enabled="true" MACAddress="080027F6522D" type="82540EM">
+
+       <DisabledModes>
+
+       <NATNetwork name="NatNetwork"/>
+
+       </DisabledModes>
+
+       <InternalNetwork name="mylan"/>
+
+</Adapter>
+
+然后启动虚拟机，进入系统查看IP地址，已经获取到了内网地址，相互ping也能成功。
+
