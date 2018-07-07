@@ -3,6 +3,7 @@
 // HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2
 
 1.如果直接使用apt-get安装的版本会是5.0.40，需要使用如下命令添加源后安装
+// direclty using apt-get will install 5.0.40 version, need to manully add resource to install version 5.5.5
 
 sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
 
@@ -12,17 +13,23 @@ sudo apt-get update
 
 sudo apt-get install virtualbox-5.2
 
+// if you get key auth alert, ignor it 
 
-2.安装VBoxManage扩展
+2.安装VBoxManage扩展 // install Vbox Manage plugin
+
 命令行中输入vboxmanage 输出的第一行中包含版本号。
 
-需要找到与安装版本对应的扩展包。去下面这个地址中找到自己的版本
+vboxmanage   // type thi command will show the version for Vbox Manage
+
+需要找到与安装版本对应的扩展包。去下面这个地址中找到自己的版本  
+// then you nned to find related plugin package to install,can find in below address link
 
 http://download.virtualbox.org/virtualbox/
 
 点击进入，然后在页面中找到对应的vbox-extpack，复制链接在服务器中下载。
+// click in, find related vbox-extpack download link
 
-这里安装的VirtualBox版本为5.2.2
+这里安装的VirtualBox版本为5.2.2 // here is show in install related version is 5.2.2
 
 wget http://download.virtualbox.org/virtualbox/5.2.2/Oracle_VM_VirtualBox_Extension_Pack-5.2.2-119230.vbox-extpack
 
@@ -30,95 +37,100 @@ VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.2.2-119230.vbox
 
 VBoxManage list extpacks
 
-image.png
-
 有的版本会自带VNC，必须执行下面一句，否则会造成后面虚拟机的远程桌面连接无法使用。
+// some version will auto containe VNC , you have to run below command to make sure VNC will lunch
 
 VBoxManage setproperty vrdeextpack "Oracle VM VirtualBox Extension Pack"
 
-(强行安利一发谷歌，这个问题百度根本没有解决方案，谷歌第一个结果就秒解决)
 
-3.新建虚拟机
-#新建一个虚拟硬盘(10G)
+3.新建虚拟机  // create New VM (Guest VM)
+#新建一个虚拟硬盘(10G) // Create virtial disk as 10G
 
 vboxmanage createmedium disk --filename arch.vdi --size 10240
 
 #新建VirtualBox虚拟机文件（系统类型必须严格按照这个写，否则可能不能安装64位系统）
+// Create virtual file, OS type has to strong follow this ,otherwise may not install 64bit OS
 
 vboxmanage createvm --name Ubuntu12.04 --ostype "Linux26_64" --register
 
 #新建SATA磁盘控制器并将上一步新建的磁盘绑定到虚拟机文件
+// Create SATA disk controller, attach disk to the virtual file
 
 vboxmanage storagectl Ubuntu12.04 --name "SATA Controller" --add sata --controller IntelAHCI
 
 vboxmanage storageattach Ubuntu12.04 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium arch.vdi
 
-#下载Ubuntu12.04镜像
+#下载Ubuntu12.04镜像 // download ubuntu12.04 iso 
 
 wget http://releases.ubuntu.com/12.04/ubuntu-12.04.5-desktop-amd64.iso
 
 #新建IDE控制器，设置它为dvd，并绑定ios文件到该dvd，--medium为系统安装文件的iso路径
+// create IDE controller, set up this as DVD, combine IOS file to the DVD. --medium is the file path for ISO
 
 vboxmanage storagectl Ubuntu12.04 --name "IDE Controller" --add ide
 
 vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-12.04.5-desktop-amd64.iso"
 
-#设置内存(1G)，显存
+#设置内存(1G)，显存 // setup RAM 1G, Vram 256m
 
 vboxmanage modifyvm Ubuntu12.04 --memory 1024 --vram 256 --hwvirtex on
 
-#设置IO
+#设置IO  // setup IO
 
 vboxmanage modifyvm Ubuntu12.04 --ioapic on
 
-#设置启动项
+#设置启动项  // config boot option
 
 vboxmanage modifyvm Ubuntu12.04 --boot1 disk --boot2 dvd --boot3 none --boot4 none
 
-#打开VRDE功能(3389)
+#打开VRDE功能(3389) // open function for VRED ( defaul port is 3389 for remote display install OS)
 
 vboxmanage modifyvm Ubuntu12.04 --vrde on
 
-#无GUI开机
+#无GUI开机 //  config no GUI boot
 
 vboxmanage startvm Ubuntu12.04 --type=headless
 
 
 此时已经安装成功，通过window下的远程桌面连接即可连接(如果不是3389的话需要指定端口)，以下是一些其他命令
+// currently shoud be install success, go to the same Vnet Window OS by using MSTSC to connect 3389
+// below is some other useful command 
 
-修改端口
+修改端口 // modify port 
 
 vboxmanage modifyvm Ubuntu12.04 --vrdeport 13389 --vrdeaddress 0.0.0.0
 
-查看系统信息
+查看系统信息 // check VM all infomation
 
 VBoxManage showvminfo Ubuntu12.04
 
-关机
+关机 // hard shutdown VM
 
 VBoxManage controlvm Ubuntu12.04 poweroff
 
-安装完成后弹出系统安装镜像
+安装完成后弹出系统安装镜像 // eject ISO after installation done 
 
 vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
 
-查看运行中的虚拟机
+查看运行中的虚拟机  // show running VMs
 
 vboxmanage list runningvms
 
-查看所有虚拟机
+查看所有虚拟机 // show all VMs 
 
 vboxmanage list vms
 
-完全删除虚拟机
+完全删除虚拟机  // full delted VM
 
 VBoxManage unregistervm --delete 虚拟机名
 
 
-4.系统内安装用户扩展
+4.系统内安装用户扩展  // increase remote display companbility 
 (实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
+//you may jump off this setup,if you do not have remote dsplay issue
 
 在下面地址中选择安装的VBox版本，然后下载对应的VBoxGuestAdditions_5.2.2.iso
+// find related version with VBoxGuestAdditions_5.2.2.iso in below link
 
 http://download.virtualbox.org/virtualbox/
 
@@ -129,26 +141,25 @@ vboxmanage storageattach Ubuntu12.04 --storagectl "IDE Controller" --port 1 --de
 
 vboxmanage startvm Ubuntu12.04 --type=headless
 
-进入系统后打开命令行 ( need to manually mount)
+进入系统后打开命令行 // need to manually mount medim after access guest VM
 
 cd /media/VBOXADDITIONS_5.2.2
 
 sudo sh ./VBoxLinuxAdditions.run
 
-虽然提示了警告，还是安装成功了...
-
 sudo reboot
 
 重启之后世界都不一样了...鼠标正常了，显示可以全屏了，操作也流畅了许多。
+//after reboot, access remote display again,you will find a new superise.
 
-CentOS7下不会自动挂载CDROM，需要手动挂载。
+CentOS7下不会自动挂载CDROM，需要手动挂载。// if CentOS7 ,need to mannuly mount CDROM
 
-5.开启远程ssh
-(在虚拟机内)
+5.开启远程ssh // setup ssh to vm
+在虚拟机内// in Guest VM
 
 sudo apt-get install ssh
 
-(在主机上)
+在主机上// In HOST 
 
 VBoxManage controlvm Ubuntu12.04 poweroff
 
@@ -156,40 +167,43 @@ VBoxManage modifyvm Ubuntu12.04 --natpf1 "gliethttp_ssh,tcp,,13322,,22"
 
 VBoxManage startvm Ubuntu12.04 --type=headless
 
-通过ssh主机的13322端口即可连接虚拟机
+通过ssh主机的13322端口即可连接虚拟机  // connect ssh by using 13322
 
-6.配置虚拟机网络
-CentOS7安装后并没有网络，需要如下配置
+6.配置虚拟机网络  // setup vnet in guest vm for centos7
+CentOS7安装后并没有网络，需要如下配置  // by defauly, centos7 do not have network after install
 
-1、打开 vi /etc/sysconfig/network-scripts/ifcfg-eth0（每个机子都可能不一样，但格式会是"ifcfg-eth*"），把ONBOOT=no，改为ONBOOT=yes
-2、重启网络：service network restart
+1、vim /etc/sysconfig/network-scripts/ifcfg-eth0（each OS may not same,but format like"ifcfg-eth*"），
+  //change // ONBOOT=no，
+  // to // ONBOOT=yes
+2、service network restart
 
-(一般情况下Ubuntu安装完整后直接能连接网络，请省略以下步骤)
+一般情况下Ubuntu安装完整后直接能连接网络，请省略以下步骤
+//by default, ubuntu will auto has network after install
+// if no, please go below steps
 
-新建nat网络连接
+新建nat网络连接 // create new NAT
 
 VBoxManage natnetwork add --netname natnet1 --network "192.168.15.0/24" --enable --dhcp on
 
-查看所有nat网络连接
+查看所有nat网络连接 //show all NAT networks
 
 VBoxManage list natnetworks
 
-打开指定连接
+打开指定连接 // start natnet1 connection
 
 VBoxManage natnetwork start --netname natnet1
 
-关闭指定连接
+关闭指定连接 // stop natnet1 connection
 
 VBoxManage natnetwork stop --netname natnet1
 
-删除指定连接
+删除指定连接 // remove natnet1 connection
 
 VBoxManage natnetwork remove --netname natnet1
 
-7.组建虚拟机之间的局域网
-上述设置之后，Ubuntu使用ifconfig查看IP地址，CentOS使用ip addr查看IP地址，发现全都是10.0.2.15...
+7.组建虚拟机之间的局域网 // create vm to vm bridge network
 
-因为VirtualBox默认采用NAT网络连接，虚拟机之间并不能通信，需要新建一个网卡，完成相关操作。
+VirtualBox默认采用NAT网络连接，虚拟机之间并不能通信，需要新建一个网卡，完成相关操作。
 
 官方文档：
 
