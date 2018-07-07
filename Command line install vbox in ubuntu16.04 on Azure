@@ -150,18 +150,17 @@ Settings file: '/root/VirtualBox VMs/Ubuntu16.04/Ubuntu16.04.vbox'
 root@ubtlab16:~# vboxmanage storagectl Ubuntu16.04 --name "SATA Controller" --add sata --controller IntelAHCI
 root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium arch1.vdi
 root@ubtlab16:~# vboxmanage storagectl Ubuntu16.04 --name "IDE Controller" --add ide
-root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-16.04.4-detop-amd64.iso"
+root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-16.04.4-desktop-amd64.iso"
 root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --memory 1024 --vram 256 --hwvirtex on
 root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --ioapic on
 root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --boot1 disk --boot2 dvd --boot3 none --boot4 none
 root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --vrde on
 root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --vrdeport 13389 --vrdeaddress 0.0.0.0
-root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
 root@ubtlab16:~# vboxmanage startvm Ubuntu16.04 --type=headless
 Waiting for VM "Ubuntu16.04" to power on...
 VM "Ubuntu16.04" has been successfully started.
-
-
+// aftet install done, stop VM,unattach iso
+root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
 
 4.系统内安装用户扩展  // increase remote display companbility 
 (实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
