@@ -1,6 +1,6 @@
 //  Command line install vbox in ubuntu16.04 
 
-// HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2 | HOST size upto V3 | CPU support VT
+// HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2 | HOST size upto V3 | CPU support VT | kernel:4.13.0-1016-azure
 
 1.如果直接使用apt-get安装的版本会是5.0.40，需要使用如下命令添加源后安装
 // direclty using apt-get will install 5.0.40 version, need to manully add resource to install version 5.5.5
@@ -123,6 +123,44 @@ vboxmanage list vms
 完全删除虚拟机  // full delted VM
 
 VBoxManage unregistervm --delete 虚拟机名
+
+// here is provide to create ubuntu16.04 VM
+
+root@ubtlab16:~# uname -r
+4.13.0-1016-azure
+root@ubtlab16:~# wget http://releases.ubuntu.com/16.04/ubuntu-16.04.4-desktop-amd64.iso
+--2018-07-07 06:53:31--  http://releases.ubuntu.com/16.04/ubuntu-16.04.4-desktop-amd64.iso
+Resolving releases.ubuntu.com (releases.ubuntu.com)... 91.189.88.160, 2001:67c:1560:8001::7
+Connecting to releases.ubuntu.com (releases.ubuntu.com)|91.189.88.160|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1624211456 (1.5G) [application/x-iso9660-image]
+Saving to: ‘ubuntu-16.04.4-desktop-amd64.iso’
+
+ubuntu-16.04.4-desktop-amd64.iso      100%[======================================================================>]   1.51G  14.2MB/s    in 1m 58s
+
+2018-07-07 06:55:29 (13.2 MB/s) - ‘ubuntu-16.04.4-desktop-amd64.iso’ saved [1624211456/1624211456]
+
+root@ubtlab16:~# vboxmanage createmedium disk --filename arch1.vdi --size 10240
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Medium created. UUID: ebb39971-70cd-42bd-a4bf-c10c99ef7322
+root@ubtlab16:~# vboxmanage createvm --name Ubuntu16.04 --ostype "Linux26_64" --register
+Virtual machine 'Ubuntu16.04' is created and registered.
+UUID: 54e7f136-08b0-47d2-884a-a4bd4dbd2b6e
+Settings file: '/root/VirtualBox VMs/Ubuntu16.04/Ubuntu16.04.vbox'
+root@ubtlab16:~# vboxmanage storagectl Ubuntu16.04 --name "SATA Controller" --add sata --controller IntelAHCI
+root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium arch1.vdi
+root@ubtlab16:~# vboxmanage storagectl Ubuntu16.04 --name "IDE Controller" --add ide
+root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-16.04.4-detop-amd64.iso"
+root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --memory 1024 --vram 256 --hwvirtex on
+root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --ioapic on
+root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --boot1 disk --boot2 dvd --boot3 none --boot4 none
+root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --vrde on
+root@ubtlab16:~# vboxmanage modifyvm Ubuntu16.04 --vrdeport 13389 --vrdeaddress 0.0.0.0
+root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
+root@ubtlab16:~# vboxmanage startvm Ubuntu16.04 --type=headless
+Waiting for VM "Ubuntu16.04" to power on...
+VM "Ubuntu16.04" has been successfully started.
+
 
 
 4.系统内安装用户扩展  // increase remote display companbility 
