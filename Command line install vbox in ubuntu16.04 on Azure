@@ -161,6 +161,18 @@ Waiting for VM "Ubuntu16.04" to power on...
 VM "Ubuntu16.04" has been successfully started.
 // aftet install done, stop VM,unattach iso
 root@ubtlab16:~# vboxmanage storageattach Ubuntu16.04 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
+// add bridge network to communicate with ubuntu12.04
+root@ubtlab16:~# vboxmanage list vms --long | grep -e "Name:" -e "State:" -e "nic"
+Name:            Ubuntu12.04
+State:           running (since 2018-07-07T05:52:41.635000000)
+Name:            Ubuntu16.04
+State:           powered off (since 2018-07-07T07:35:57.802000000)
+root@ubtlab16:~# VBoxManage modifyvm Ubuntu16.04 --intnet4 "brgnet"
+root@ubtlab16:~# VBoxManage modifyvm Ubuntu16.04 --nic4 intnet
+root@ubtlab16:~# vboxmanage startvm Ubuntu16.04 --type=headless
+Waiting for VM "Ubuntu16.04" to power on...
+VM "Ubuntu16.04" has been successfully started.
+
 
 4.系统内安装用户扩展  // increase remote display companbility 
 (实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
