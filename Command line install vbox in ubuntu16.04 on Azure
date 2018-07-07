@@ -3,7 +3,7 @@
 // HOST- Ubuntu16.04  |  Guest VM - Ubuntu12.04  |  VirtualBox version 5.2.2 | HOST size upto V3 | CPU support VT | kernel:4.13.0-1016-azure
 
 1.如果直接使用apt-get安装的版本会是5.0.40，需要使用如下命令添加源后安装
-// direclty using apt-get will install 5.0.40 version, need to manully add resource to install version 5.5.5
+// direclty using apt-get will install 5.0.40 version, need to manully add resource to install version 5.5.2
 
 sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
 
