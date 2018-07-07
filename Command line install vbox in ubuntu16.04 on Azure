@@ -204,25 +204,21 @@ VBoxManage natnetwork remove --netname natnet1
 7.组建虚拟机之间的局域网 // create vm to vm bridge network
 
 VirtualBox默认采用NAT网络连接，虚拟机之间并不能通信，需要新建一个网卡，完成相关操作。
+// by default, VBOX using NAT for network, VM to VM can not ping each other, need to create a new Bridge network for workarount
 
-官方文档：
+官方文档：// offical doc
 
-新建DHCP服务器：https://www.virtualbox.org/manual/ch08.html#vboxmanage-dhcpserver
+新建DHCP服务器：https://www.virtualbox.org/manual/ch08.html#vboxmanage-dhcpserver   // create a DHCP
 
-虚拟机新建网卡：https://www.virtualbox.org/manual/ch06.html#network_internal
+虚拟机新建网卡：https://www.virtualbox.org/manual/ch06.html#network_internal   //Create a NEW NETWORK CARD(nic)
 
-VBoxManage dhcpserver add --netname "mylan" --ip 192.168.123.1 --netmask 255.255.255.0 --lowerip 192.168.123.10 --upperip 192.168.123.99 --enable
+VBoxManage dhcpserver add --netname "brgnet" --ip 192.168.123.1 --netmask 255.255.255.0 --lowerip 192.168.123.10 --upperip 192.168.123.99 --enable
 
-VBoxManage modifyvm CentOS7 --intnet4 "mylan"
+VBoxManage modifyvm Ubuntu12.04 --intnet4 "brgnet"
 
-VBoxManage modifyvm CentOS7_ms --intnet4 "mylan"
+VBoxManage modifyvm Ubuntu12.04 --nic4 intnet
 
-和官方文档上不太一样，重启之后并没有直接找到网卡，需要手动设置vbox文件的网卡设置为
-
-可能需要如下的命令，未找到理论依据...
-
-VBoxManage modifyvm CentOS7 --nic4 intnet
-
+// below is for additional unknow using ,please ingor it if above commnad works
 <Adapter slot="3" enabled="true" MACAddress="080027F6522D" type="82540EM">
 
        <DisabledModes>
@@ -235,5 +231,7 @@ VBoxManage modifyvm CentOS7 --nic4 intnet
 
 </Adapter>
 
-然后启动虚拟机，进入系统查看IP地址，已经获取到了内网地址，相互ping也能成功。
+// after run the command, boot the VM and check the new network interface
+// you should able to see the new eht1 NIC with 192.168.1.X ipaddress
+
 
