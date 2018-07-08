@@ -173,6 +173,22 @@ root@ubtlab16:~# vboxmanage startvm Ubuntu16.04 --type=headless
 Waiting for VM "Ubuntu16.04" to power on...
 VM "Ubuntu16.04" has been successfully started.
 
+// create another VM name ubuntu164 with one paster done in bash shell
+
+vboxmanage createmedium disk --filename arch2.vdi --size 10240
+vboxmanage createvm --name Ubuntu164 --ostype "Linux26_64" --register
+vboxmanage storagectl Ubuntu164 --name "SATA Controller" --add sata --controller IntelAHCI
+vboxmanage storageattach Ubuntu164 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium arch2.vdi
+vboxmanage storagectl Ubuntu164 --name "IDE Controller" --add ide
+vboxmanage storageattach Ubuntu164 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "ubuntu-16.04.4-desktop-amd64.iso"
+vboxmanage modifyvm Ubuntu164 --memory 1524 --vram 256 --hwvirtex on
+vboxmanage modifyvm Ubuntu164 --ioapic on
+vboxmanage modifyvm Ubuntu164 --boot1 disk --boot2 dvd --boot3 none --boot4 none
+vboxmanage modifyvm Ubuntu164 --vrde on
+vboxmanage modifyvm Ubuntu164 --vrdeport 23389 --vrdeaddress 0.0.0.0
+vboxmanage startvm Ubuntu164 --type=headless
+
+
 
 4.系统内安装用户扩展  // increase remote display companbility 
 (实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
