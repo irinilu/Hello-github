@@ -174,7 +174,6 @@ Waiting for VM "Ubuntu16.04" to power on...
 VM "Ubuntu16.04" has been successfully started.
 
 // create another VM name ubuntu164 with one paster done in bash shell
-
 vboxmanage createmedium disk --filename arch2.vdi --size 10240
 vboxmanage createvm --name Ubuntu164 --ostype "Linux26_64" --register
 vboxmanage storagectl Ubuntu164 --name "SATA Controller" --add sata --controller IntelAHCI
@@ -187,7 +186,11 @@ vboxmanage modifyvm Ubuntu164 --boot1 disk --boot2 dvd --boot3 none --boot4 none
 vboxmanage modifyvm Ubuntu164 --vrde on
 vboxmanage modifyvm Ubuntu164 --vrdeport 23389 --vrdeaddress 0.0.0.0
 vboxmanage startvm Ubuntu164 --type=headless
-
+// after installation finished,turnoff vm and runing below command to unattch mudeim and link bridge net
+vboxmanage storageattach Ubuntu164 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
+VBoxManage modifyvm Ubuntu164 --intnet4 "brgnet"
+VBoxManage modifyvm Ubuntu164 --nic4 intnet
+vboxmanage startvm Ubuntu164 --type=headless
 
 
 4.系统内安装用户扩展  // increase remote display companbility 
