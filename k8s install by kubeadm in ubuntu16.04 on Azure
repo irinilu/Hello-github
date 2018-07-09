@@ -1,0 +1,354 @@
+// k8s install by kubeadm in ubuntu16.04 on Azure
+// ubuntu 16.04 + docker 17.12.1-ce + kubernetes v1.11.0 
+
+// In Master
+
+// install docker  + using ustc image in China 
+
+root@ubtlab16:~# sudo mkdir /etc/docker
+
+root@ubtlab16:~# sudo mkdir -p /data/docker
+
+root@ubtlab16:~# sudo apt-get update
+
+Get:1 http://download.virtualbox.org/virtualbox/debian xenial InRelease [7,883 B]
+Ign:1 http://download.virtualbox.org/virtualbox/debian xenial InRelease
+Hit:2 http://azure.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:3 http://azure.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Hit:4 http://azure.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Hit:5 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Fetched 7,883 B in 0s (13.0 kB/s)
+Reading package lists... Done
+W: GPG error: http://download.virtualbox.org/virtualbox/debian xenial InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY A2F683C52980AECF
+W: The repository 'http://download.virtualbox.org/virtualbox/debian xenial InRelease' is not signed.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+
+root@ubtlab16:~# sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+ca-certificates is already the newest version (20170717~16.04.1).
+curl is already the newest version (7.47.0-1ubuntu2.8).
+software-properties-common is already the newest version (0.96.20.7).
+The following packages will be upgraded:
+  apt-transport-https
+1 upgraded, 0 newly installed, 0 to remove and 5 not upgraded.
+Need to get 26.1 kB of archives.
+After this operation, 0 B of additional disk space will be used.
+Get:1 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 apt-transport-https amd64 1.2.27 [26.1 kB]
+Fetched 26.1 kB in 0s (1,606 kB/s)
+(Reading database ... 101177 files and directories currently installed.)
+Preparing to unpack .../apt-transport-https_1.2.27_amd64.deb ...
+Unpacking apt-transport-https (1.2.27) over (1.2.26) ...
+Setting up apt-transport-https (1.2.27) ...
+
+root@ubtlab16:~# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+OK
+
+root@ubtlab16:~# sudo add-apt-repository \
+>     "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/$(. /etc/os-release; echo "$ID") \
+>     $(lsb_release -cs) \
+>     stable"
+
+root@ubtlab16:~# sudo apt-get update && apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17.12 | head -1 | awk '{print $3}')
+
+Hit:1 http://azure.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:2 http://azure.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Hit:3 http://azure.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Get:4 http://download.virtualbox.org/virtualbox/debian xenial InRelease [7,883 B]
+Ign:4 http://download.virtualbox.org/virtualbox/debian xenial InRelease
+Hit:5 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Get:6 https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu xenial InRelease [65.8 kB]
+Get:7 https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu xenial/stable amd64 Packages [3,653 B]
+Fetched 77.3 kB in 0s (78.4 kB/s)
+Reading package lists... Done
+W: GPG error: http://download.virtualbox.org/virtualbox/debian xenial InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY A2F683C52980AECF
+W: The repository 'http://download.virtualbox.org/virtualbox/debian xenial InRelease' is not signed.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  aufs-tools cgroupfs-mount
+Suggested packages:
+  mountall
+The following NEW packages will be installed:
+  aufs-tools cgroupfs-mount docker-ce
+0 upgraded, 3 newly installed, 0 to remove and 5 not upgraded.
+Need to get 30.2 MB/30.3 MB of archives.
+After this operation, 149 MB of additional disk space will be used.
+Get:1 https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu xenial/stable amd64 docker-ce amd64 17.12.1~ce-0~ubuntu [30.2 MB]
+Fetched 30.2 MB in 2s (12.5 MB/s)
+Selecting previously unselected package aufs-tools.
+(Reading database ... 101177 files and directories currently installed.)
+Preparing to unpack .../aufs-tools_1%3a3.2+20130722-1.1ubuntu1_amd64.deb ...
+Unpacking aufs-tools (1:3.2+20130722-1.1ubuntu1) ...
+Selecting previously unselected package cgroupfs-mount.
+Preparing to unpack .../cgroupfs-mount_1.2_all.deb ...
+Unpacking cgroupfs-mount (1.2) ...
+Selecting previously unselected package docker-ce.
+Preparing to unpack .../docker-ce_17.12.1~ce-0~ubuntu_amd64.deb ...
+Unpacking docker-ce (17.12.1~ce-0~ubuntu) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Processing triggers for systemd (229-4ubuntu21.2) ...
+Setting up aufs-tools (1:3.2+20130722-1.1ubuntu1) ...
+Setting up cgroupfs-mount (1.2) ...
+Setting up docker-ce (17.12.1~ce-0~ubuntu) ...
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(group) request, exiting
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for systemd (229-4ubuntu21.2) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+
+root@ubtlab16:~# docker version
+
+Client:
+ Version:       17.12.1-ce
+ API version:   1.35
+ Go version:    go1.9.4
+ Git commit:    7390fc6
+ Built: Tue Feb 27 22:17:40 2018
+ OS/Arch:       linux/amd64
+Server:
+ Engine:
+  Version:      17.12.1-ce
+  API version:  1.35 (minimum version 1.12)
+  Go version:   go1.9.4
+  Git commit:   7390fc6
+  Built:        Tue Feb 27 22:16:13 2018
+  OS/Arch:      linux/amd64
+  Experimental: false
+
+root@ubtlab16:~# sudo groupadd docker
+
+groupadd: group 'docker' already exists
+
+root@ubtlab16:~# sudo gpasswd -a irinilu docker
+
+Adding user irinilu to group docker
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(group) request, exiting
+
+root@ubtlab16:~# curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+OK
+
+root@ubtlab16:~# echo "deb [arch=amd64] http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
+
+deb [arch=amd64] http://apt.kubernetes.io/ kubernetes-xenial main
+
+root@ubtlab16:~# apt-get update
+
+Hit:1 http://azure.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:2 http://azure.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Hit:3 http://azure.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Get:4 http://download.virtualbox.org/virtualbox/debian xenial InRelease [7,883 B]
+Hit:5 https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu xenial InRelease
+Hit:7 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Ign:4 http://download.virtualbox.org/virtualbox/debian xenial InRelease
+Get:6 https://packages.cloud.google.com/apt kubernetes-xenial InRelease [8,993 B]
+Get:8 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 Packages [17.9 kB]
+Fetched 34.8 kB in 2s (16.6 kB/s)
+Reading package lists... Done
+W: GPG error: http://download.virtualbox.org/virtualbox/debian xenial InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY A2F683C52980AECF
+W: The repository 'http://download.virtualbox.org/virtualbox/debian xenial InRelease' is not signed.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+
+root@ubtlab16:~# apt-get install -y kubelet kubeadm kubectl
+
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  cri-tools ebtables kubernetes-cni socat
+The following NEW packages will be installed:
+  cri-tools ebtables kubeadm kubectl kubelet kubernetes-cni socat
+0 upgraded, 7 newly installed, 0 to remove and 6 not upgraded.
+Need to get 53.7 MB of archives.
+After this operation, 351 MB of additional disk space will be used.
+Get:1 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 ebtables amd64 2.0.10.4-3.4ubuntu2.16.04.2 [79.9 kB]
+Get:2 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 socat amd64 1.7.3.1-1 [321 kB]
+Get:3 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 cri-tools amd64 1.11.0-00 [5,309 kB]
+Get:4 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 kubernetes-cni amd64 0.6.0-00 [5,910 kB]
+Get:5 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 kubelet amd64 1.11.0-00 [23.3 MB]
+Get:6 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 kubectl amd64 1.11.0-00 [9,399 kB]
+Get:7 https://packages.cloud.google.com/apt kubernetes-xenial/main amd64 kubeadm amd64 1.11.0-00 [9,422 kB]
+Fetched 53.7 MB in 10s (4,951 kB/s)
+Selecting previously unselected package cri-tools.
+(Reading database ... 101453 files and directories currently installed.)
+Preparing to unpack .../cri-tools_1.11.0-00_amd64.deb ...
+Unpacking cri-tools (1.11.0-00) ...
+Selecting previously unselected package ebtables.
+Preparing to unpack .../ebtables_2.0.10.4-3.4ubuntu2.16.04.2_amd64.deb ...
+Unpacking ebtables (2.0.10.4-3.4ubuntu2.16.04.2) ...
+Selecting previously unselected package kubernetes-cni.
+Preparing to unpack .../kubernetes-cni_0.6.0-00_amd64.deb ...
+Unpacking kubernetes-cni (0.6.0-00) ...
+Selecting previously unselected package socat.
+Preparing to unpack .../socat_1.7.3.1-1_amd64.deb ...
+Unpacking socat (1.7.3.1-1) ...
+Selecting previously unselected package kubelet.
+Preparing to unpack .../kubelet_1.11.0-00_amd64.deb ...
+Unpacking kubelet (1.11.0-00) ...
+Selecting previously unselected package kubectl.
+Preparing to unpack .../kubectl_1.11.0-00_amd64.deb ...
+Unpacking kubectl (1.11.0-00) ...
+Selecting previously unselected package kubeadm.
+Preparing to unpack .../kubeadm_1.11.0-00_amd64.deb ...
+Unpacking kubeadm (1.11.0-00) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for systemd (229-4ubuntu21.2) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Setting up cri-tools (1.11.0-00) ...
+Setting up ebtables (2.0.10.4-3.4ubuntu2.16.04.2) ...
+update-rc.d: warning: start and stop actions are no longer supported; falling back to defaults
+Setting up kubernetes-cni (0.6.0-00) ...
+Setting up socat (1.7.3.1-1) ...
+Setting up kubelet (1.11.0-00) ...
+Setting up kubectl (1.11.0-00) ...
+Setting up kubeadm (1.11.0-00) ...
+Processing triggers for systemd (229-4ubuntu21.2) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+
+root@ubtlab16:~# sysctl net.bridge.bridge-nf-call-iptables=1
+
+net.bridge.bridge-nf-call-iptables = 1
+
+root@ubtlab16:~# ^C
+root@ubtlab16:~# vim /etc/sysctl.conf   // add "net.bridge.bridge-nf-call-iptables = 1" in file
+
+root@ubtlab16:~# sysctl -p
+
+net.bridge.bridge-nf-call-iptables = 1
+
+root@ubtlab16:~# sudo sed -i "s,ExecStart=$,Environment=\"KUBELET_EXTRA_ARGS=--pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause-amd64:3.1\"\nExecStart=,g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+root@ubtlab16:~# sudo systemctl daemon-reload
+
+root@ubtlab16:~# sudo systemctl restart kubelet
+
+root@ubtlab16:~# kubelet --version
+
+Kubernetes v1.11.0
+
+root@ubtlab16:~# sudo vim /home/irinilu/kubeadm.conf
+
+//add
+apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+api:
+  advertiseAddress: 0.0.0.0
+networking:
+  podSubnet: 10.244.0.0/16
+etcd:
+  image: registry.cn-hangzhou.aliyuncs.com/google_containers/etcd-amd64:3.1.11
+kubernetesVersion: v1.11.0
+imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
+
+
+root@ubtlab16:~# kubeadm init --config /home/irinilu/kubeadm.conf
+
+I0709 06:20:06.635058   32655 feature_gate.go:230] feature gates: &{map[]}
+[init] using Kubernetes version: v1.11.0
+[preflight] running pre-flight checks
+I0709 06:20:06.653032   32655 kernel_validator.go:81] Validating kernel version
+I0709 06:20:06.653126   32655 kernel_validator.go:96] Validating kernel config
+        [WARNING SystemVerification]: docker version is greater than the most recently validated version. Docker version: 17.12.1-ce. Max validated version: 17.03
+[preflight/images] Pulling images required for setting up a Kubernetes cluster
+[preflight/images] This might take a minute or two, depending on the speed of your internet connection
+[preflight/images] You can also perform this action in beforehand using 'kubeadm config images pull'
+[kubelet] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[preflight] Activating the kubelet service
+[certificates] Generated ca certificate and key.
+[certificates] Generated apiserver certificate and key.
+[certificates] apiserver serving cert is signed for DNS names [ubtlab16 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 10.1.1.20]
+[certificates] Generated apiserver-kubelet-client certificate and key.
+[certificates] Generated sa key and public key.
+[certificates] Generated front-proxy-ca certificate and key.
+[certificates] Generated front-proxy-client certificate and key.
+[certificates] Generated etcd/ca certificate and key.
+[certificates] Generated etcd/server certificate and key.
+[certificates] etcd/server serving cert is signed for DNS names [ubtlab16 localhost] and IPs [127.0.0.1 ::1]
+[certificates] Generated etcd/peer certificate and key.
+[certificates] etcd/peer serving cert is signed for DNS names [ubtlab16 localhost] and IPs [10.1.1.20 127.0.0.1 ::1]
+[certificates] Generated etcd/healthcheck-client certificate and key.
+[certificates] Generated apiserver-etcd-client certificate and key.
+[certificates] valid certificates and keys now exist in "/etc/kubernetes/pki"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/admin.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/kubelet.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/controller-manager.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/scheduler.conf"
+[controlplane] wrote Static Pod manifest for component kube-apiserver to "/etc/kubernetes/manifests/kube-apiserver.yaml"
+[controlplane] wrote Static Pod manifest for component kube-controller-manager to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+[controlplane] wrote Static Pod manifest for component kube-scheduler to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+[etcd] Wrote Static Pod manifest for a local etcd instance to "/etc/kubernetes/manifests/etcd.yaml"
+[init] waiting for the kubelet to boot up the control plane as Static Pods from directory "/etc/kubernetes/manifests"
+[init] this might take a minute or longer if the control plane images have to be pulled
+[apiclient] All control plane components are healthy after 49.002586 seconds
+[uploadconfig] storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[kubelet] Creating a ConfigMap "kubelet-config-1.11" in namespace kube-system with the configuration for the kubelets in the cluster
+[markmaster] Marking the node ubtlab16 as master by adding the label "node-role.kubernetes.io/master=''"
+[markmaster] Marking the node ubtlab16 as master by adding the taints [node-role.kubernetes.io/master:NoSchedule]
+[patchnode] Uploading the CRI Socket information "/var/run/dockershim.sock" to the Node API object "ubtlab16" as an annotation
+[bootstraptoken] using token: k9wxvv.i3031lx5g1ahdc1r
+[bootstraptoken] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstraptoken] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstraptoken] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstraptoken] creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+Your Kubernetes master has initialized successfully!
+To start using your cluster, you need to run the following as a regular user:
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+You can now join any number of machines by running the following on each node
+as root:
+  kubeadm join 10.1.1.20:6443 --token k9wxvv.i3031lx5g1ahdc1r --discovery-token-ca-cert-hash sha256:98555f251185664de1fb33d88cf0cf56f06b7fc12e5521d59093f36206f66c50
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
