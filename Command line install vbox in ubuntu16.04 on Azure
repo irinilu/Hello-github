@@ -192,6 +192,40 @@ VBoxManage modifyvm Ubuntu164 --intnet4 "brgnet"
 VBoxManage modifyvm Ubuntu164 --nic4 intnet
 vboxmanage startvm Ubuntu164 --type=headless
 
+// create another VM name rhel72 with one paster done in bash shell
+
+vboxmanage createmedium disk --filename /tata/rhel72os.vdi --size 10240
+vboxmanage createvm --name rhel72 --ostype "Linux26_64" --register
+vboxmanage storagectl rhel72 --name "SATA Controller" --add sata --controller IntelAHCI
+vboxmanage storageattach rhel72 --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium /tata/rhel72os.vdi
+vboxmanage storagectl rhel72 --name "IDE Controller" --add ide
+vboxmanage storageattach rhel72 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "/tata/rhel-server-7.2-x86_64-dvd.iso"
+vboxmanage modifyvm rhel72 --memory 1324 --vram 256 --hwvirtex on
+vboxmanage modifyvm rhel72 --ioapic on
+vboxmanage modifyvm rhel72 --boot1 disk --boot2 dvd --boot3 none --boot4 none
+vboxmanage modifyvm rhel72 --vrde on
+vboxmanage modifyvm rhel72 --vrdeport 43389 --vrdeaddress 0.0.0.0
+vboxmanage startvm rhel72 --type=headless
+
+// after installation finished,turnoff vm and runing below command to unattch mudeim and link bridge net
+
+vboxmanage storageattach rhel72 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium none
+VBoxManage modifyvm rhel72 --intnet4 "brgnet"
+VBoxManage modifyvm rhel72 --nic4 intnet
+vboxmanage startvm rhel72 --type=headless
+
+vboxmanage storageattach rhel72 --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "VBoxGuestAdditions_5.2.2.iso"
+
+VBoxManage controlvm rhel72 poweroff
+
+VBoxManage modifyvm rhel72 --natpf1 "gliethttp_ssh,tcp,,13622,,22"
+
+VBoxManage modifyvm rhel72 --intnet4 "brgnet"
+
+VBoxManage modifyvm rhel72 --nic4 intnet
+
+
+
 
 4.系统内安装用户扩展  // increase remote display companbility 
 (实测虚拟机为Ubuntu16.04时这个扩展会安装不成功，但分辨率初始就显示正常，可以跳过这一步)
