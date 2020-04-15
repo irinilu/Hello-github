@@ -658,3 +658,46 @@ root@shadow:~# rm /var/www/html/shadow
 // Stop the network packet capture  ^_^
 
 // Start LiME dump generate on the TVM 
+
+// Now you should be in the root shell, just read the file called “ nice work “ !
+
+root@shadow:~# cd LiME/src/
+
+root@shadow:~/LiME/src# insmod lime-4.15.0-96-generic.ko "path=/bk/ubuntu164.mem format=lime"
+
+// Wait until the process finished. 
+// Done !
+root@shadow:~/LiME/src# ls /bk/ubuntu164.mem -lh
+-r--r--r-- 1 root root 512M Apr 15 20:23 /bk/ubuntu164.mem
+
+// Transfer out the dump file and network packet file to the Forensic VM for future investigation.
+
+##############################################
+
+// Next to prepare: 
+
+1 - A Story line of this Project 
+
+2 - A full document of the lab procedure , with Picture and explanation.
+
+3 - An attacking video 
+
+4 - A topology structure of the Lab
+
+5 - A analyze report for digital forensics ( network packet + Memory dump )
+
+6 - Several questions for the future students who might have the chance to encounter with this Shadow Lab! 
+> How many open ports that the attack identified in the scan? 
+> How many site on the TVM ?
+> Can you show me the contents of code.py?
+> How the attacker access the first shell , name of the shell ?
+> How may passwords you know ?
+> Who is the real admin in TVM? 
+> Dose the attacker leave the backdoor?
+> Who is the evil ? 
+> Can you reproduce the penetration process?
+> Any suggestion for the enhance the TVM security ?
+>  ?
+>  ?
+
+###############################################
