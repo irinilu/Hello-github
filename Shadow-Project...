@@ -693,6 +693,8 @@ root@shadow:~/LiME/src# ls /bk/ubuntu164.mem -lh
 > How the attacker access the first shell , name of the shell ?
 > How may passwords you know ?
 > Who is the real admin in TVM? 
+> Recover the contents of the bind shell ?
+> Port numbers of the Net Cat?  
 > Dose the attacker leave the backdoor?
 > Who is the evil ? 
 > Can you reproduce the penetration process?
